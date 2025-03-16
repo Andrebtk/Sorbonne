@@ -1,0 +1,17 @@
+{
+    "files.associations": {
+        "random": "c",
+        "parser.h": "c",
+        "array": "c",
+        "functional": "c",
+        "istream": "c",
+        "ostream": "c",
+        "tuple": "c",
+        "type_traits": "c",
+        "utility": "c",
+        "stdio.h": "c",
+        "hash.h": "c",
+        "stdlib.h": "c",
+        "string.h": "c"
+    }
+}

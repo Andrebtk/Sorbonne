@@ -12,9 +12,13 @@ typedef struct hashentry {
 
 typedef struct hashmap {
 	int size;
+	int current_mem;
 	HashEntry* table;
 } HashMap;
 
+void free_HashEntry(HashEntry *he);
+void free_HashMap(HashMap *hm);
+void afficher_hashmap(HashMap* hp);
 unsigned long simple_hash(const char *str);
 int h(const char *str, int i);
 HashMap *hashmap_create();

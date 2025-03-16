@@ -2,6 +2,40 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+
+void free_HashEntry(HashEntry *he) {
+    if (he != NULL) {
+        free(he->key);
+        free(he->value);
+        free(he);
+    }
+}
+
+void free_HashMap(HashMap *hm) {
+    if (hm != NULL) {
+        for (int i = 0; i < hm->size; i++) {
+            free(hm->table[i].key);
+            free(hm->table[i].value);
+        }
+        free(hm->table);
+        free(hm);
+    }
+}
+
+void afficher_hashmap(HashMap* hp){
+    if (hp == NULL) return;
+    printf("size : %d\n", hp->size);
+    printf("current_mem : %d\n", hp->current_mem);
+
+    for (int i=0; i < TABLE_SIZE; i++) {
+        if (hp->table[i].key != NULL) {  // Only print valid entries
+            int *stored_value = (int*) hp->table[i].value;  // Cast to int*
+            printf("table[%d] : %d \n", i, *stored_value);  // Dereference it
+        }
+	}
+}
+
 unsigned long simple_hash(const char *str) {
 	unsigned long res=0;
 	
@@ -18,21 +52,21 @@ int h(const char *str, int i) {
 
 
 HashMap *hashmap_create() {
-	HashMap *new = malloc(sizeof(HashMap));
-	new->size = TABLE_SIZE;
-	new->table = malloc(sizeof(HashEntry*) * TABLE_SIZE );
+	HashMap *h = malloc(sizeof(HashMap));
+
+	h->size = TABLE_SIZE;
+    h->table = malloc(sizeof(HashEntry) * TABLE_SIZE);
 
 	for (int i=0; i < TABLE_SIZE; i++) {
-		new->table[i].value = NULL;
+		h->table[i].value = NULL;
+        h->table[i].key = NULL;
 	}
 	
-	return new;
+	return h;
 }
 
 int hashmap_insert(HashMap *map, const char *key, void *value) {
-	 HashEntry* elem = malloc(sizeof(HashEntry));;
-	 elem->key = strdup(key);
-	 elem->value = value;
+
 	 
 	 int i=0;
 	 unsigned long k = h(key,i);
@@ -41,8 +75,10 @@ int hashmap_insert(HashMap *map, const char *key, void *value) {
 	 	i++;
 	 	k = (h(key,i) % map->size); 	
 	 }
-	 map->table[k].key = elem->key;
-	 map->table[k].value = elem->value;
+     free(map->table[k].key);
+	 map->table[k].key = strdup(key);
+	 map->table[k].value = value;
+
 	 return k;
 }
 
@@ -79,10 +115,6 @@ int hashmap_remove(HashMap *map, const char *key) {
 
     return 0;
 }
-
-
-
-
 
 void hashmap_destroy(HashMap *map) {
     for (int i = 0; i < map->size; i++) {
