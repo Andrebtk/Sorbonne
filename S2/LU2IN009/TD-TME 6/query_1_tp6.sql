@@ -7,5 +7,5 @@ where a.aid = ANY (
     AND a.aid = ANY (
         select ae.aid
         from RangEquipe re, AthletesEquipe ae
-        where re.eqid = ae.eqid AND ae.aid = a.aid
+        where re.eqid = ae.eqid
     )
