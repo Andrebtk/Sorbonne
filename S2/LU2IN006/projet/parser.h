@@ -5,7 +5,6 @@
 
 
 typedef struct {
-
 	char *mnemonic;
 	char *operand1;
 	char *operand2;

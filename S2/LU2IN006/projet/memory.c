@@ -2,15 +2,18 @@
 #include "hash.h"
 #include <stdio.h>
 #include <stdlib.h>
+
+
+
 MemoryHandler *memory_init(int size) {
 	MemoryHandler *new = malloc(sizeof(MemoryHandler));
 	new->memory=malloc(size*sizeof(void*));
 
-	/*demander pour **memory
-	for(int i=0; i< ???; i++){
-		new->momery[i]=NULL;
+	
+	for(int i=0; i< size; i++){
+		new->memory[i]=NULL;
 	}
-	*/
+	
 	new->total_size=size;
 
 	Segment *seg = malloc(sizeof(Segment));

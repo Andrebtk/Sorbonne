@@ -165,7 +165,7 @@ ParserResult *parse(const char *filename) {
 			res->data_count++;
 			
 		} else {
-			printf("In .CODE: %s \n",buffer);
+			//printf("In .CODE: %s \n",buffer);
 			Instruction *b = parse_code_instruction(buffer, res->labels, ligne);
 			
 			res->code_instructions[res->code_count] = b;
