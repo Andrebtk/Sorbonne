@@ -1,0 +1,2 @@
+select 'Durée moyenne = '|| round(avg(datediff(day, e.datedebut, e.datefin)+1),2) || ' min = ' || min(datediff(day, e.datedebut, e.datefin)+1) || ' max = ' || max(datediff(day, e.datedebut, e.datefin)+1) 
+from epreuve e
