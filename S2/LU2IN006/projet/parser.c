@@ -44,7 +44,7 @@ void affiche_Instruction(Instruction* a) {
 }
 
 void afficher_ParserResult(ParserResult* p) {
-	if (p==NULL) return;
+	if (p==NULL) { printf("Affichage NULL"); return; };
 	printf("data_count: %d \n",p->data_count);
 
 	for (int i=0; i<p->data_count; i++) {
@@ -133,6 +133,8 @@ Instruction *parse_code_instruction(const char *line, HashMap *labels, int code_
 
 	return res;
 }
+
+
 
 ParserResult *parse(const char *filename) {
 	FILE *f = fopen(filename,"r");
