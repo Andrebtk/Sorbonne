@@ -35,7 +35,7 @@ CPU *cpu_init(int memory_size) {
     int *SP = malloc(sizeof(int));
     int *BP = malloc(sizeof(int));
     
-    create_segment(res->memory_handler, "SS", 0, 128);
+    //create_segment(res->memory_handler, "SS", 0, 128);
 
 
 	*AX=0;
@@ -221,54 +221,88 @@ void print_data_segment(CPU *cpu) {
 
 
 void *immediate_addressing(CPU *cpu, const char *operand){
-    if (matches("^[0-9]+$",operand)==0) {
-        if(hashmap_get(cpu->constant_pool, operand) == NULL) {
-            int *i = malloc(sizeof(int));
-	        *i=atoi(operand);
-            hashmap_insert(cpu->constant_pool, operand,i);
-            return (void*)i;
-        }
-    }
-    return NULL;
+
+	if (matches("^[0-9]+$", operand)) {
+		if(hashmap_get(cpu->constant_pool, operand) == NULL) {
+			int *val = malloc(sizeof(int));
+			*val=atoi(operand);
+			hashmap_insert(cpu->constant_pool, operand, val);
+			return (void *) val;
+		} else {
+			return hashmap_get(cpu->constant_pool, operand);
+		}
+	}
+
+	return NULL;
 }
 
 void *register_addressing(CPU *cpu, const char *operand) {
-    if (matches("^(AX|BX|CX|DX)$",operand)==0) {
-        if(hashmap_get(cpu->context, operand)!=NULL) {
-            return hashmap_get(cpu->context, operand);
-        }
-    }
-    return NULL;
+
+	if (matches("^(AX|BX|CX|DX)$",operand)) {
+		return hashmap_get(cpu->context, operand);
+	}
+	return NULL;
 }
 
 void *memory_direct_addressing(CPU *cpu, const char *operand) {
-    if (matches("^\[[0-9]+$", operand)==0) {
-        char addr[50];
-        sscanf(operand, "[%[^]]", addr);
-        // A finir
-    }
+	if (matches("^\\[([0-9]+)\\]$", operand)) {
+		int address = atoi(operand + 1);
+		Segment* ds=hashmap_get(cpu->memory_handler->allocated, "DS");
+
+		if (ds == NULL || address >= ds->size) {
+			return NULL;  // Si le segment est invalide ou l'adresse est hors limites
+		}
+
+		return load(cpu->memory_handler, "DS", address);
+	}
+
+	return NULL;
 }
 
 void *register_indirect_addressing(CPU *cpu, const char *operand) {
+	if(matches("^\\[(AX|BX|CX|DX)\\]$", operand)){
+		char reg_name[3];
+		reg_name[0] = operand[1];
+		reg_name[1] = operand[2];
+		reg_name[2] = '\0';
 
+		int* val = (int*) hashmap_get(cpu->context, reg_name);
+		if(val == NULL) {
+			return NULL;
+		}
+
+		int addr = *val;
+		return load(cpu->memory_handler, "DS", addr);
+	}
+
+	return NULL;
+}
+
+void *resolve_addressing(CPU *cpu, const char *operand) {
+	void* t = immediate_addressing(cpu, operand);
+	if(t != NULL) { return t; }
+
+	t = register_addressing(cpu, operand);
+	if(t != NULL) { return t; }
+
+	t = memory_direct_addressing(cpu, operand);
+	if(t != NULL) { return t; }
+
+	t = register_indirect_addressing(cpu, operand);
+	if(t != NULL) { return t; }
+
+	return NULL;
 }
 
 
-void* segment_override_addressing(CPU* cpu, const char* operand){
-    char SEGMENT[100];
-	char REGISTRE[100];
-    /*if (matches("\[[a-zA-Z]{2}:[a-zA-Z]{2}\]$",operand)==0) {
-        sscanf(operand, "[%[^:]:%s]", SEGMENT, REGISTRE);
-        //recherche dans cpu de SEGMENT et renvoie l'addresse dans memory
-    }*/
-}
-
-
-/*
 void handle_MOV(CPU* cpu, void* src, void* dest){
-    
+	if(src == NULL || dest == NULL){
+		return;
+	}
+	
+	*((int*)dest) = *((int*)src);
 }
-*/
+
 
 void allocate_code_segment(CPU *cpu, Instruction **code_instructions, int code_count) {
     create_segment(cpu->memory_handler, "CS", 0, code_count);
@@ -336,5 +370,14 @@ Instruction* fetch_next_instruction(CPU *cpu) {
     }
 
     return NULL;
+}
+
+void* segment_override_addressing(CPU* cpu, const char* operand){
+    char SEGMENT[100];
+	char REGISTRE[100];
+    /*if (matches("\[[a-zA-Z]{2}:[a-zA-Z]{2}\]$",operand)==0) {
+        sscanf(operand, "[%[^:]:%s]", SEGMENT, REGISTRE);
+        //recherche dans cpu de SEGMENT et renvoie l'addresse dans memory
+    }*/
 }
 

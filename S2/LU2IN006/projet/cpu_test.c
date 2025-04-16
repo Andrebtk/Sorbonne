@@ -19,39 +19,83 @@ CPU* setup_test_environment() {
     *cx = 100;
     *dx = 0;
 
-    if(hashmap_get(cpu->memory_handler->allocated, "DS")) {
+
+    if(!hashmap_get(cpu->memory_handler->allocated, "DS")) {
         create_segment(cpu->memory_handler, "DS", 0, 20);
 
-        for(int i=0; i<2; i++) {
+        for(int i=0; i<10; i++) {
             int *value = (int*) malloc(sizeof(int));
             *value = i*10+5;
             store(cpu->memory_handler, "DS", i, value);
         }
     }
-
+    
     printf("Test environment initialized \n");
     return cpu;
 }
 
 
 int main() {
-    
+    /*
     CPU *cpu = cpu_init(1024);
     HashMap *hp = hashmap_create();
     ParserResult *p = parse("test_data.txt");
     //afficher_ParserResult(p);
 
     allocate_variables(cpu, p->data_instructions, p->data_count);
-    print_data_segment(cpu);
+    //print_data_segment(cpu);
     //print_cpu(cpu);
     
     //cpu_destroy(cpu);
     free_ParserResult(p);
 	free_HashMap(hp);
-    
+    */
+   CPU* cpu = setup_test_environment();
 
-    //CPU* cpu = setup_test_environment();
-    //print_data_segment(cpu);
-    
+   printf("\n===== [TEST: Adressage Immédiat] =====\n");
+   int* immediate1 = immediate_addressing(cpu, "42");
+   int* immediate2 = immediate_addressing(cpu, "42");
+   
+   printf("Valeur immédiate 1 (42) : %d (adresse : %p)\n", *immediate1, (void*)immediate1);
+   printf("Valeur immédiate 2 (42) : %d (adresse : %p)\n", *immediate2, (void*)immediate2);
+   printf(">> Les deux pointeurs sont %s\n", (immediate1 == immediate2) ? "identiques (partagée)" : "différents (dupliqués)");
+   
+   
+   
+   printf("\n===== [TEST: Adressage par Registre] =====\n");
+   int* DX = register_addressing(cpu, "DX");
+   printf("Avant MOV, registre DX = %d\n", *DX);
+   handle_MOV(cpu, immediate1, DX);
+   printf("Après MOV, registre DX = %d\n", *DX);
+   
+   
+   
+   printf("\n===== [TEST: Adressage Direct Mémoire] =====\n");
+   int* direct1 = memory_direct_addressing(cpu, "[4]");
+   int* BX = register_addressing(cpu, "BX");
+   
+   printf("Avant MOV, mémoire à [4] = %d\n", *direct1);
+   printf("Registre BX = %d\n", *BX);
+   handle_MOV(cpu, BX, direct1);
+   printf("Après MOV, mémoire à [4] = %d\n", *direct1);
+   
+   
+   
+   printf("\n===== [TEST: Adressage Indirect par Registre] =====\n");
+   int* indirect1 = register_indirect_addressing(cpu, "[AX]");  // AX = 3
+   int* CX = register_addressing(cpu, "CX");
+   
+   printf("Avant MOV, mémoire à [AX] (AX = 3) = %d\n", *indirect1);
+   printf("Registre CX = %d\n", *CX);
+   handle_MOV(cpu, CX, indirect1);
+   printf("Après MOV, mémoire à [AX] (AX = 3) = %d\n", *indirect1);
+   
+
+
+    //printf("\n== Registres finaux ==\n");
+    //print_cpu(cpu);
+
+    printf("\n== Segment DS ==\n");
+    print_data_segment(cpu);
 
 }

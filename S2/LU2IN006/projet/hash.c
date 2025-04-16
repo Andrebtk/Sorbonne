@@ -24,15 +24,15 @@ void free_HashMap(HashMap *hm) {
 }
 
 void afficher_hashmap(HashMap* hp){
-    if (hp == NULL) return;
-    printf("size : %d\n", hp->size);
-    printf("current_mem : %d\n", hp->current_mem);
+	if (hp == NULL) return;
+	printf("size : %d\n", hp->size);
+	printf("current_mem : %d\n", hp->current_mem);
 
-    for (int i=0; i < TABLE_SIZE; i++) {
-        if (hp->table[i].key != NULL) {  // Only print valid entries
-            int *stored_value = (int*) hp->table[i].value;  // Cast to int*
-            printf("table[%d] : %d \n", i, *stored_value);  // Dereference it
-        }
+	for (int i=0; i < TABLE_SIZE; i++) {
+		if (hp->table[i].value != NULL && hp->table[i].key != NULL) {  // Only print valid entries
+			printf("table[%d] : key = %s, value = %d\n", 
+				i, hp->table[i].key, *(int*)hp->table[i].value);
+		}
 	}
 }
 

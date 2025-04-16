@@ -68,6 +68,8 @@ MemoryHandler *memory_init(int size) {
 
 Segment* find_free_segment(MemoryHandler* handler, int start, int size, Segment** prev) {
 	Segment* tmp = handler->free_list;
+	*prev = NULL;
+	
 	while(tmp) {
 		if ((tmp->start <= start) && (tmp->start+tmp->size >= start+size)) {
 			return tmp;
