@@ -12,6 +12,10 @@
         "stdio.h": "c",
         "hash.h": "c",
         "stdlib.h": "c",
-        "string.h": "c"
+        "string.h": "c",
+        "regex.h": "c",
+        "string_view": "c",
+        "initializer_list": "c",
+        "string": "c"
     }
 }

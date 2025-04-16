@@ -78,11 +78,14 @@ Instruction *parse_data_instuction(const char *line, HashMap *memory_locations){
 	res->operand1 = strdup(type);
 	res->operand2 = strdup(valeur);
 	
-	char *token = strtok(valeur, ",");
+	char *val_copy = strdup(valeur);
+	char *token = strtok(val_copy, ",");
 	while (token != NULL) {
         size++;
         token = strtok(NULL, ",");
     }
+
+	free(val_copy);
 
 	int *i = malloc(sizeof(int));
 	*i=memory_locations->current_mem;
@@ -133,8 +136,6 @@ Instruction *parse_code_instruction(const char *line, HashMap *labels, int code_
 
 	return res;
 }
-
-
 
 ParserResult *parse(const char *filename) {
 	FILE *f = fopen(filename,"r");

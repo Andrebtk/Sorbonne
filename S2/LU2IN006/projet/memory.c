@@ -6,6 +6,44 @@
 #include <string.h>
 
 
+void print_memory(MemoryHandler *m) {
+	printf("\nAffichage MemoryHandler \n");
+	printf("taille total: %d\n", m->total_size);
+
+	printf("\nTable de hachage \"allocated\"\n");
+	afficher_hashmap(m->allocated);
+
+	printf("\nListe chainee des segments de memoire libres \"free_list\"\n");
+	print_segments(m->free_list);
+
+	printf("\nTableau de pointeurs vers la memoire allouee \"*memory\"\n\n");
+	int col = m->total_size/20;
+	int local =0;
+	for(int i=0; i<m->total_size; i++){
+		if(local>col){
+			printf("\n");
+			local=0;
+		}
+		
+		if(m->memory[i] != NULL) {
+			printf("O ");
+		}else {
+			printf("N ");
+		}
+
+		local++;
+	}
+	printf("\n");
+}
+
+void print_segments(Segment* s) {
+	if(s != NULL) {
+		printf("\nSegment : \n\n");
+		printf("start: %d \nsize: %d\n", s->start, s->size);
+		print_segments(s->next);
+	}
+}
+
 MemoryHandler *memory_init(int size) {
 	MemoryHandler *new = malloc(sizeof(MemoryHandler));
 	new->memory=malloc(size*sizeof(void*));
@@ -45,6 +83,11 @@ int create_segment(MemoryHandler *handler, const char *name, int start, int size
 	Segment *prev = NULL;
 	Segment *n = find_free_segment(handler, start, size, &prev);
 	
+	if(n == NULL) {
+        printf("Error: %s %d\n", name, size);
+        return -1;
+    }
+
 	if(n != NULL) {
 		Segment *new_seg = malloc(sizeof(Segment));
 		new_seg->start = start;
@@ -77,6 +120,9 @@ int create_segment(MemoryHandler *handler, const char *name, int start, int size
 	}
 	return 0;// ne sais pas quoi retourner
 }
+
+
+
 
 int remove_segment(MemoryHandler *handler, const char *name){
 	Segment *new = hashmap_get(handler->allocated, name);

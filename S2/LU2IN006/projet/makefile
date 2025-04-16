@@ -20,4 +20,4 @@ hash.o: hash.h hash.c
 	gcc -c hash.c
 
 clean:
-	rm -f *.o main
+	rm -f *.o main mem parser cpu

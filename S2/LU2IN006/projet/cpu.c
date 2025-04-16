@@ -3,6 +3,20 @@
 #include <stdio.h>
 #include <regex.h>
 
+
+
+void print_cpu(CPU* cpu){
+
+    print_memory(cpu->memory_handler);
+
+    printf("\nTable de hachage \"context\"\n");
+    afficher_hashmap(cpu->context);
+    
+    printf("\nTable de hachage \"constant_pool\"\n");
+    afficher_hashmap(cpu->constant_pool);
+}
+
+
 CPU *cpu_init(int memory_size) {
     CPU *res = malloc(sizeof(CPU));
     res->memory_handler = memory_init(memory_size);
@@ -54,10 +68,9 @@ CPU *cpu_init(int memory_size) {
     return res;
 }
 
-
 //REGARDER allocate_code_segment qui est similaire
 int push_value(CPU *cpu, int value) { //refaire et verifier
-    Segment* ss = hashmap_get(res->memory_handler->allocated, "SS");
+    Segment* ss = hashmap_get(cpu->memory_handler->allocated, "SS");
     
     int cpt=0;
     while(ss->next != NULL) {
@@ -74,7 +87,7 @@ int push_value(CPU *cpu, int value) { //refaire et verifier
     new_seg->size = ss->size;
     new_seg->next = NULL;
     ss->next = new_seg;
-    cpu->memory_handler->memory[new_seg->start + new_seg->size] = value; //Pas sur 
+    //cpu->memory_handler->memory[new_seg->start + new_seg->size] = (void*) value; //Pas sur 
 
     Segment* sp = hashmap_get(cpu->context, "SP");
     *sp=*new_seg;
@@ -83,7 +96,7 @@ int push_value(CPU *cpu, int value) { //refaire et verifier
 }
 
 int pop_value(CPU *cpu, int *dest) {
-    Segment* ss = hashmap_get(res->memory_handler->allocated, "SS");
+    Segment* ss = hashmap_get(cpu->memory_handler->allocated, "SS");
     if(ss==NULL){
         return -1;
     }
@@ -92,7 +105,7 @@ int pop_value(CPU *cpu, int *dest) {
         ss = ss->next;
     }
 
-    *dest = cpu->memory_handler->memory[ss->start + ss->size];
+    //*dest = cpu->memory_handler->memory[ss->start + ss->size];
     Segment* sp = hashmap_get(cpu->context, "SP");
     sp=ss;
     return 0;
@@ -120,14 +133,14 @@ void cpu_destroy(CPU *cpu) {
 
 void* store(MemoryHandler *handler, const char *segment_name, int pos, void *data) {
     
-    Segment* seg=hashmap_get(handler->allocated, segment_name);
-    if((seg != NULL) && (pos <= seg->size)){
-        handler->memory[seg->start + pos] = data;
-    }
+	Segment* seg=hashmap_get(handler->allocated, segment_name);
+	if((seg != NULL) && (pos <= seg->size)){
+		handler->memory[seg->start + pos] = data;
+	}
 
-    return NULL;
-    
+	return NULL;
 }
+
 void* load(MemoryHandler *handler, const char *segment_name, int pos) {
     Segment* seg=hashmap_get(handler->allocated, segment_name);
     if (seg != NULL) {
@@ -137,61 +150,75 @@ void* load(MemoryHandler *handler, const char *segment_name, int pos) {
 }
 
 void allocate_variables(CPU *cpu, Instruction** data_instructions, int data_count) {
-    int size_new_seg = 0;
-    
-    for(int i=0; i<data_count; i++) {
-        if(strchr(data_instructions[i]->operand2,',')) {
-            char *token = strtok(data_instructions[i]->operand2, ",");
-            while (token != NULL) {
-                size_new_seg++;
-                token = strtok(NULL, ",");
-            }
-        } else {
-            size_new_seg++;
-        }
-    }
+	int size_new_seg = 0;
 
-    printf("%d \n", size_new_seg); //FONCITONE ICI
+	for(int i=0; i<data_count; i++) {
+		if(strchr(data_instructions[i]->operand2,',')) {
+			char *token = strtok(data_instructions[i]->operand2, ",");
+			while (token != NULL) {
+				size_new_seg++;
+				token = strtok(NULL, ",");
+			}
+		} else {
+			size_new_seg++;
+		}
+	}
+	
+	
+	Segment *current = cpu->memory_handler->free_list;
 
-    create_segment(cpu->memory_handler, "DS", 0, size_new_seg);
+	while (current) {
+		if (current->size >= size_new_seg) {
+			create_segment(cpu->memory_handler, "DS", current->start, size_new_seg); //Pour avoir le start dynamiquement
+		}
+		current = current->next;
+	}
 
+	int mem_adr=0;
 
-    int mem_adr=0;
-    for(int i=0; i<data_count; i++) {
-        if(strchr(data_instructions[i]->operand2,',')){
-            char *token = strtok(data_instructions[i]->operand2, ",");
-            while (token != NULL) {
-                int *dat = malloc(sizeof(int));
-
-                sscanf(token, "%d", dat); //convert char* to int
-                store(cpu->memory_handler, "DS", mem_adr,(void*) dat);
-
-                mem_adr++;
-                token = strtok(NULL, ",");
-            }
-        } else {
-            int *dat = malloc(sizeof(int));
-
-            sscanf(data_instructions[i]->operand2, "%d", dat); //convert char* to int
+	Segment* ds=hashmap_get(cpu->memory_handler->allocated, "DS");
 
 
-            store(cpu->memory_handler, "DS", mem_adr,(void*) dat);
-        }
-    }
+	for(int i=0; i<data_count; i++) {
+		
+		char *data = strdup(data_instructions[i]->operand2);
+
+		if (strchr(data, ',')) {
+			char *token = strtok(data, ",");
+			while (token != NULL) {
+				int *val = malloc(sizeof(int));
+				sscanf(token, "%d", val); //convert char* to int
+				store(cpu->memory_handler, "DS", mem_adr++, val);
+				token = strtok(NULL, ",");
+			}
+		
+		} else {
+		
+			int *val = malloc(sizeof(int));
+			sscanf(data, "%d", val); //convert char* to int
+			store(cpu->memory_handler, "DS", mem_adr++, val);
+		}
+		free(data);
+	}
 }
 
 
 void print_data_segment(CPU *cpu) {
-    Segment* ds=hashmap_get(cpu->memory_handler->allocated, "DS");
-    for (int i=0; i< ds->size; i++) {
-        int* a = load(cpu->memory_handler, "DS", i);
-        if (a != NULL) {
-            printf("%d: %d\n", i, *a);
-        }
-        
-    }
-    
+	Segment* ds=hashmap_get(cpu->memory_handler->allocated, "DS");
+	if (ds == NULL) {
+		printf("Segment DS pas trouver \n");
+		return;
+	}
+
+
+	for (int i=0; i< ds->size; i++) {
+		int* a = load(cpu->memory_handler, "DS", i);
+		if (a != NULL) {
+			printf("%d: %d\n", i, *a);
+		}
+	}
 }
+
 
 void *immediate_addressing(CPU *cpu, const char *operand){
     if (matches("^[0-9]+$",operand)==0) {
@@ -204,7 +231,6 @@ void *immediate_addressing(CPU *cpu, const char *operand){
     }
     return NULL;
 }
-
 
 void *register_addressing(CPU *cpu, const char *operand) {
     if (matches("^(AX|BX|CX|DX)$",operand)==0) {
@@ -231,10 +257,10 @@ void *register_indirect_addressing(CPU *cpu, const char *operand) {
 void* segment_override_addressing(CPU* cpu, const char* operand){
     char SEGMENT[100];
 	char REGISTRE[100];
-    if (matches("\[[a-zA-Z]{2}:[a-zA-Z]{2}\]$",operand)==0) {
+    /*if (matches("\[[a-zA-Z]{2}:[a-zA-Z]{2}\]$",operand)==0) {
         sscanf(operand, "[%[^:]:%s]", SEGMENT, REGISTRE);
         //recherche dans cpu de SEGMENT et renvoie l'addresse dans memory
-    }
+    }*/
 }
 
 
@@ -244,53 +270,22 @@ void handle_MOV(CPU* cpu, void* src, void* dest){
 }
 */
 
-CPU* setup_test_environment() {
-    CPU* cpu = cpu_init(1024);
-    if(!cpu)  {
-        printf("Error: CPU initialization failed \n");
-        return NULL;
-    }
-
-    int *ax = (int*) hashmap_get(cpu->context, "AX");
-    int *bx = (int*) hashmap_get(cpu->context, "BX");
-    int *cx = (int*) hashmap_get(cpu->context, "CX");
-    int *dx = (int*) hashmap_get(cpu->context, "DX");
-
-    *ax = 3;
-    *bx = 6;
-    *cx = 100;
-    *dx = 0;
-
-    if(hashmap_get(cpu->memory_handler->allocated, "DS")) {
-        create_segment(cpu->memory_handler, "DS", 0, 20);
-
-        for(int i=0; i<10; i++) {
-            int *value = (int*) malloc(sizeof(int));
-            *value = i*10+5;
-            store(cpu->memory_handler, "DS", i, value);
-        }
-    }
-
-    printf("Test environment initialized \n");
-    return cpu;
-}
-
 void allocate_code_segment(CPU *cpu, Instruction **code_instructions, int code_count) {
     create_segment(cpu->memory_handler, "CS", 0, code_count);
     Segment* cs = hashmap_get(cpu->memory_handler->allocated, "CS");
     
     
     for(int i=0; i<code_count; i++) {
-        cpu->memory_handler[cs->start + i] = code_instructions[i];
+        //cpu->memory_handler[cs->start + i] = code_instructions[i];
     }
 
     int* ip = hashmap_get(cpu->context,"IP");
     *ip = cs->start;
 }
-
+/*
 int handle_instruction(CPU *cpu, Instruction *instr, void* src, void *dest) {
     if(strcmp(instr->mnemonic, "MOV")) {
-         *dest = *str;
+         //*dest = *src;
     } else if (strcmp(instr->mnemonic, "ADD")) {
         int *a = src;
         int *b = dest;
@@ -332,6 +327,7 @@ int handle_instruction(CPU *cpu, Instruction *instr, void* src, void *dest) {
         //TO DO
     }
 }
+*/
 
 Instruction* fetch_next_instruction(CPU *cpu) {
     //FINISH WITH BETTER IF
