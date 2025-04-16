@@ -1,7 +1,7 @@
 .DATA
-x DW 42
-y DB 10
+X DW 42
+Y DB 10
 .CODE
-MOV AX [x]
-MOV BX [y]
-JMP loop 
+start: MOV AX,[X]
+loop: MOV BX,[Y]
+JMP loop

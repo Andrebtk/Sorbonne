@@ -7,13 +7,19 @@
 
 void print_cpu(CPU* cpu){
 
-    print_memory(cpu->memory_handler);
+    //print_memory(cpu->memory_handler);
+	print_memory(cpu->memory_handler);
 
+	
     printf("\nTable de hachage \"context\"\n");
     afficher_hashmap(cpu->context);
     
     printf("\nTable de hachage \"constant_pool\"\n");
     afficher_hashmap(cpu->constant_pool);
+
+
+	printf("\nData Segment\n\n");
+	print_data_segment(cpu);
 }
 
 
@@ -122,6 +128,8 @@ int matches ( const char * pattern , const char * string ) {
     regfree (&regex) ;
     return result == 0;
 }
+
+
 
 void cpu_destroy(CPU *cpu) {
     free_HashMap(cpu->context);
@@ -294,7 +302,6 @@ void *resolve_addressing(CPU *cpu, const char *operand) {
 	return NULL;
 }
 
-
 void handle_MOV(CPU* cpu, void* src, void* dest){
 	if(src == NULL || dest == NULL){
 		return;
@@ -304,73 +311,272 @@ void handle_MOV(CPU* cpu, void* src, void* dest){
 }
 
 
-void allocate_code_segment(CPU *cpu, Instruction **code_instructions, int code_count) {
-    create_segment(cpu->memory_handler, "CS", 0, code_count);
-    Segment* cs = hashmap_get(cpu->memory_handler->allocated, "CS");
-    
-    
-    for(int i=0; i<code_count; i++) {
-        //cpu->memory_handler[cs->start + i] = code_instructions[i];
+
+char *trim(char *str) {
+    while (*str == ' ' || *str == '\t' || *str == '\n' || *str == '\r') str++;
+
+    char *end = str + strlen(str) - 1;
+    while (end > str && (*end == ' ' || *end == '\t' || *end == '\n' || *end == '\r')) {
+        *end = '\0';
+        end--;
+    }
+    return str;
+}
+
+int search_and_replace(char **str, HashMap *values) {
+    if (!str || !*str || !values) return 0;
+
+    int replaced = 0;
+    char *input = *str;
+
+    // Iterate through all keys in the hashmap
+    for (int i = 0; i < values->size; i++) {
+        if (values->table[i].key && values->table[i].key != (void *)-1) {
+            char *key = values->table[i].key;
+            int value = (int)(long)values->table[i].value;
+
+            // Find potential substring match
+            char *substr = strstr(input, key);
+            while (substr) {
+                // Construct replacement buffer
+                char replacement[64];
+                snprintf(replacement, sizeof(replacement), "%d", value);
+
+                // Calculate lengths
+                int key_len = strlen(key);
+                int repl_len = strlen(replacement);
+                int remain_len = strlen(substr + key_len);
+
+                // Create new string
+                char *new_str = (char *)malloc(strlen(input) - key_len + repl_len + 1);
+                if (!new_str) return 0;  // Handle allocation failure
+
+                // Copy part before the key
+                strncpy(new_str, input, substr - input);
+                new_str[substr - input] = '\0';
+
+                // Append replacement value
+                strcat(new_str, replacement);
+
+                // Append the part after the key
+                strcat(new_str, substr + key_len);
+
+                // Free and update original string
+                free(input);
+                *str = new_str;
+                input = new_str;
+
+                replaced = 1;
+
+                // Look for the next occurrence of the same key in the string
+                substr = strstr(input, key);
+            }
+        }
     }
 
-    int* ip = hashmap_get(cpu->context,"IP");
-    *ip = cs->start;
+    // Trim the final string
+    if (replaced) {
+        char *trimmed = trim(input);
+        if (trimmed != input) {
+            memmove(input, trimmed, strlen(trimmed) + 1);
+        }
+    }
+
+    return replaced;
 }
-/*
+
+
+
+
+
+// 1) Remplace les labels (ex: "loop" → "1")
+static void replace_label(Instruction *instr, HashMap *labels) {
+    // operand1
+    if (instr->operand1) {
+        int *p = hashmap_get(labels, instr->operand1);
+        if (p) {
+            char buf[32];
+            snprintf(buf, sizeof(buf), "%d", *p);
+            free(instr->operand1);
+            instr->operand1 = strdup(buf);
+        }
+    }
+    // operand2
+    if (instr->operand2) {
+        int *p = hashmap_get(labels, instr->operand2);
+        if (p) {
+            char buf[32];
+            snprintf(buf, sizeof(buf), "%d", *p);
+            free(instr->operand2);
+            instr->operand2 = strdup(buf);
+        }
+    }
+}
+
+// 2) Remplace les variables mémoire entre crochets (ex: "[X]" → "[0]")
+static void replace_memvar(Instruction *instr, HashMap *memloc) {
+    for (int k = 0; k < 2; k++) {
+        char **op = (k == 0 ? &instr->operand1 : &instr->operand2);
+        if (!*op) continue;
+        size_t len = strlen(*op);
+        if (len >= 3 && (*op)[0] == '[' && (*op)[len-1] == ']') {
+            // on extrait le nom sans les crochets
+            char name[64];
+            memcpy(name, *op + 1, len - 2);
+            name[len-2] = '\0';
+            int *p = hashmap_get(memloc, name);
+            if (p) {
+                char buf[32];
+                snprintf(buf, sizeof(buf), "[%d]", *p);
+                free(*op);
+                *op = strdup(buf);
+            }
+        }
+    }
+}
+
+int resolve_constants(ParserResult *result) {
+    if (!result) return -1;
+
+    for (int i = 0; i < result->code_count; i++) {
+        Instruction *instr = result->code_instructions[i];
+        // 1) labels
+        replace_label(instr, result->labels);
+        // 2) variables mémoire
+        replace_memvar(instr, result->memory_locations);
+    }
+    return 0;
+}
+
+
+
+
+
+void allocate_code_segment(CPU *cpu, Instruction **code_instructions, int code_count) {
+	if(create_segment(cpu->memory_handler, "CS", 0, code_count) == -1) {
+		return;
+	}
+	
+	Segment* cs = hashmap_get(cpu->memory_handler->allocated, "CS");
+	if(cs == NULL) return ;
+
+	for(int i=0; i<code_count; i++) {
+		cpu->memory_handler->memory[cs->start + i] = code_instructions[i];
+	}
+
+	int* ip = hashmap_get(cpu->context,"IP");
+	if(ip != NULL){
+		*ip = cs->start;
+	}
+}
+
+
 int handle_instruction(CPU *cpu, Instruction *instr, void* src, void *dest) {
-    if(strcmp(instr->mnemonic, "MOV")) {
-         //*dest = *src;
-    } else if (strcmp(instr->mnemonic, "ADD")) {
+    if(strcmp(instr->mnemonic, "MOV") == 0) {
+
+		handle_MOV(cpu, src, dest);
+    } else if (strcmp(instr->mnemonic, "ADD")==0) {
         int *a = src;
         int *b = dest;
         *b = *a + *b;
-    } else if (strcmp(instr->mnemonic, "CMP")) {
-        int sr = *src;
-        int des = *dest;
-        int c = des - sr;
-        if (sr == des) {
-            //UDPATE ZF
-            int* zf = (int*) hashmap_get(cpu->context,"ZF")
-            *zf = 1;
-        } else if(des < sr) {
-            //UPDATE SF
-            int* sf = (int*) hashmap_get(cpu->context,"SF");
-            *sf = 1;
-        }
-    } else if (strcmp(instr->mnemonic, "JMP")) {
-        int* ip = (int*) hashmap_get(cpu->context,"IP");
-        *ip = atoi(inst->operand1);
-    } else if (strcmp(instr->mnemonic, "JZ")) {
-        
-        if(hashmap_get(cpu->context, "ZF") != NULL) {
-            int* ip = (int*) hashmap_get(cpu->context,"IP");
-            *ip = atoi(inst->operand1);
-        }
-    } else if (strcmp(instr->mnemonic, "JNZ")) {
-        if(hashmap_get(cpu->context, "ZF") == NULL) {
-            int* ip = (int*) hashmap_get(cpu->context,"IP");
-            *ip = atoi(inst->operand1);
-        }
-    } else if (strcmp(instr->mnemonic, "HALT")) {
-        Segment* cs = hashmap_get(cpu->memory_handler->allocated, "CS");
-        int* ip = (int*) hashmap_get(cpu->context,"IP");
-        *ip = cs->start + cs->size;
-    } else if (strcmp(instr->mnemonic, "PUSH")){
-        //TO DO
-    } else if (strcmp(instr->mnemonic, "POP")) {
-        //TO DO
-    }
+    } else if (strcmp(instr->mnemonic, "CMP")==0) {
+		int s = *((int*)src);
+		int d = *((int*)dest);
+		int diff = d - s;
+
+		int* zf = (int*) hashmap_get(cpu->context,"ZF");
+		int* sf = (int*) hashmap_get(cpu->context,"SF");
+		*zf = (s == d) ? 1: 0;
+		*sf = (d<s)?1 : 0;
+	} else if (strcmp(instr->mnemonic, "JMP")==0){
+		int* ip = (int*) hashmap_get(cpu->context,"IP");
+		*ip = *((int*)src);
+	} else if(strcmp(instr->mnemonic, "JZ")==0) {
+		int* ip = (int*) hashmap_get(cpu->context,"IP");
+		int* zf = (int*) hashmap_get(cpu->context,"ZF");
+		if(*zf == 1){
+			*ip = *((int*)src);
+		}
+	} else if(strcmp(instr->mnemonic, "JNZ")==0) {
+		int* ip = (int*) hashmap_get(cpu->context,"IP");
+		int* zf = (int*) hashmap_get(cpu->context,"ZF");
+		if(*zf == 0){
+			*ip = *((int*)src);
+		}
+	} else if(strcmp(instr->mnemonic, "HALT")==0) {
+		int* ip = (int*) hashmap_get(cpu->context,"IP");
+		Segment *cs = (Segment*)hashmap_get(cpu->memory_handler->allocated, "CS");
+		*ip = cs->start + cs->size;
+	}
+
+	return 0;
 }
-*/
+
+int execute_instruction(CPU *cpu, Instruction *instr) {
+	
+	void* op1 = NULL;
+	void* op2 = NULL;
+	
+	if( (strcmp(instr->mnemonic, "MOV")==0) || (strcmp(instr->mnemonic, "ADD")==0) || (strcmp(instr->mnemonic, "CMP")==0) ){
+		op1 = resolve_addressing(cpu, instr->operand1);
+		op2 = resolve_addressing(cpu, instr->operand2);
+	}else if ( (strcmp(instr->mnemonic, "JMP")==0) || (strcmp(instr->mnemonic, "JZ")==0) || (strcmp(instr->mnemonic, "JNZ")==0)) {
+		
+		op1 = resolve_addressing(cpu, instr->operand1);
+	}
+	return handle_instruction(cpu, instr, op1, op2);
+}
 
 Instruction* fetch_next_instruction(CPU *cpu) {
-    //FINISH WITH BETTER IF
-    if(hashmap_get(cpu->context,"IP") != NULL && hashmap_get(cpu->memory_handler->allocated, "CS") != NULL) {
+	Segment* CS = hashmap_get(cpu->memory_handler->allocated, "CS");
+	int* IP = hashmap_get(cpu->context,"IP");
 
-    }
+	if(( IP != NULL) && (CS != NULL) && (*IP < CS->start + CS->size)) { //NOT SURE HERE
+		Instruction* instr = (Instruction*) load(cpu->memory_handler, "CS", *IP);
+        (*IP)++;
+        return instr;
+	}
 
-    return NULL;
+	return NULL;
 }
+
+int run_program(CPU *cpu) {
+
+	char q = 'd';
+	printf("\n=== État initial du CPU ===\n");
+	print_cpu(cpu);
+
+	Segment* CS = hashmap_get(cpu->memory_handler->allocated, "CS");
+
+	while (1){
+		
+		Instruction* instr = fetch_next_instruction(cpu);
+		
+		if(instr == NULL){
+			printf("\nFin du programme (IP hors limites)\n");
+			break;
+		}
+
+		printf("\nExécution de : %s %s %s\n", 
+			instr->mnemonic, 
+			instr->operand1 ? instr->operand1 : "",
+			instr->operand2 ? instr->operand2 : "");
+
+		execute_instruction(cpu, instr);
+		
+
+		printf("\nAppuyez sur Entrée pour continuer (q pour quitter)...");
+		scanf("%c", &q);
+		if(q=='q') break;
+
+	}
+
+	printf("\n=== État final du CPU ===\n");
+	print_cpu(cpu);
+	
+	return 0;
+}
+
 
 void* segment_override_addressing(CPU* cpu, const char* operand){
     char SEGMENT[100];

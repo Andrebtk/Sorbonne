@@ -1,0 +1,6 @@
+.DATA
+X DW 0
+arr DB 1,2,3
+y DW 4
+.CODE
+mov
