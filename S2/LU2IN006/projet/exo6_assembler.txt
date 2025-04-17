@@ -1,6 +1,8 @@
 .DATA
-X DW 0
-arr DB 1,2,3
-y DW 4
+X DW 42
+arr DB 20,21,22,23
+Y DB 10
 .CODE
-mov
+start: MOV AX,[X]
+loop: ADD AX,[Y]
+JMP loop

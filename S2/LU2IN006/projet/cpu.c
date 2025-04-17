@@ -41,7 +41,6 @@ CPU *cpu_init(int memory_size) {
     int *SP = malloc(sizeof(int));
     int *BP = malloc(sizeof(int));
     
-    //create_segment(res->memory_handler, "SS", 0, 128);
 
 
 	*AX=0;
@@ -453,8 +452,15 @@ int resolve_constants(ParserResult *result) {
 
 
 void allocate_code_segment(CPU *cpu, Instruction **code_instructions, int code_count) {
-	if(create_segment(cpu->memory_handler, "CS", 0, code_count) == -1) {
-		return;
+
+
+	Segment *current = cpu->memory_handler->free_list;
+
+	while (current) {
+		if (current->size >= code_count) {
+			create_segment(cpu->memory_handler, "CS", current->start, code_count); //Pour avoir le start dynamiquement
+		}
+		current = current->next;
 	}
 	
 	Segment* cs = hashmap_get(cpu->memory_handler->allocated, "CS");
@@ -466,65 +472,80 @@ void allocate_code_segment(CPU *cpu, Instruction **code_instructions, int code_c
 
 	int* ip = hashmap_get(cpu->context,"IP");
 	if(ip != NULL){
-		*ip = cs->start;
+		*ip = 0;
 	}
 }
 
-
-int handle_instruction(CPU *cpu, Instruction *instr, void* src, void *dest) {
-    if(strcmp(instr->mnemonic, "MOV") == 0) {
-
-		handle_MOV(cpu, src, dest);
-    } else if (strcmp(instr->mnemonic, "ADD")==0) {
-        int *a = src;
-        int *b = dest;
-        *b = *a + *b;
-    } else if (strcmp(instr->mnemonic, "CMP")==0) {
-		int s = *((int*)src);
-		int d = *((int*)dest);
-		int diff = d - s;
-
-		int* zf = (int*) hashmap_get(cpu->context,"ZF");
-		int* sf = (int*) hashmap_get(cpu->context,"SF");
-		*zf = (s == d) ? 1: 0;
-		*sf = (d<s)?1 : 0;
-	} else if (strcmp(instr->mnemonic, "JMP")==0){
-		int* ip = (int*) hashmap_get(cpu->context,"IP");
-		*ip = *((int*)src);
-	} else if(strcmp(instr->mnemonic, "JZ")==0) {
-		int* ip = (int*) hashmap_get(cpu->context,"IP");
-		int* zf = (int*) hashmap_get(cpu->context,"ZF");
-		if(*zf == 1){
-			*ip = *((int*)src);
-		}
-	} else if(strcmp(instr->mnemonic, "JNZ")==0) {
-		int* ip = (int*) hashmap_get(cpu->context,"IP");
-		int* zf = (int*) hashmap_get(cpu->context,"ZF");
-		if(*zf == 0){
-			*ip = *((int*)src);
-		}
-	} else if(strcmp(instr->mnemonic, "HALT")==0) {
-		int* ip = (int*) hashmap_get(cpu->context,"IP");
-		Segment *cs = (Segment*)hashmap_get(cpu->memory_handler->allocated, "CS");
-		*ip = cs->start + cs->size;
+int handle_instruction(CPU *cpu, Instruction *instr, void *dst, void *src) {
+	if (strcmp(instr->mnemonic, "MOV") == 0) {
+		// MOV dst, src
+		*((int*)dst) = *((int*)src);
 	}
-
+	else if (strcmp(instr->mnemonic, "ADD") == 0) {
+		// ADD dst, src
+		int *d = dst, *s = src;
+		*d = *d + *s;
+	}
+	else if (strcmp(instr->mnemonic, "CMP") == 0) {
+		// CMP dst, src
+		int d = *((int*)dst), s = *((int*)src);
+		int *zf = hashmap_get(cpu->context, "ZF");
+		int *sf = hashmap_get(cpu->context, "SF");
+		*zf = (d == s);
+		*sf = (d < s);
+	}
+	else if (strcmp(instr->mnemonic, "JMP") == 0) {
+		// JMP address
+		int *ip = hashmap_get(cpu->context, "IP");
+		*ip = *((int*)src);
+	}
+	else if (strcmp(instr->mnemonic, "JZ") == 0) {
+		int *ip = hashmap_get(cpu->context, "IP");
+		int *zf = hashmap_get(cpu->context, "ZF");
+		if (*zf) *ip = *((int*)src);
+	}
+	else if (strcmp(instr->mnemonic, "JNZ") == 0) {
+		int *ip = hashmap_get(cpu->context, "IP");
+		int *zf = hashmap_get(cpu->context, "ZF");
+		if (!*zf) *ip = *((int*)src);
+	}
+	else if (strcmp(instr->mnemonic, "HALT") == 0) {
+		Segment *cs = hashmap_get(cpu->memory_handler->allocated, "CS");
+		int *ip = hashmap_get(cpu->context, "IP");
+		// on considère que CS démarre à 0
+		*ip = cs->size;
+	}
 	return 0;
 }
 
+
 int execute_instruction(CPU *cpu, Instruction *instr) {
-	
-	void* op1 = NULL;
-	void* op2 = NULL;
-	
-	if( (strcmp(instr->mnemonic, "MOV")==0) || (strcmp(instr->mnemonic, "ADD")==0) || (strcmp(instr->mnemonic, "CMP")==0) ){
-		op1 = resolve_addressing(cpu, instr->operand1);
-		op2 = resolve_addressing(cpu, instr->operand2);
-	}else if ( (strcmp(instr->mnemonic, "JMP")==0) || (strcmp(instr->mnemonic, "JZ")==0) || (strcmp(instr->mnemonic, "JNZ")==0)) {
-		
-		op1 = resolve_addressing(cpu, instr->operand1);
+    void *src = NULL, *dst = NULL;
+
+	// 1) MOV / ADD / CMP : deux opérandes
+	if (strcmp(instr->mnemonic, "MOV") == 0
+		|| strcmp(instr->mnemonic, "ADD") == 0
+		|| strcmp(instr->mnemonic, "CMP") == 0) {
+		dst = resolve_addressing(cpu, instr->operand1);
+		src = resolve_addressing(cpu, instr->operand2);
+		return handle_instruction(cpu, instr, dst, src);
 	}
-	return handle_instruction(cpu, instr, op1, op2);
+
+	// 2) JMP / JZ / JNZ : un seul opérande (la cible)
+	if (strcmp(instr->mnemonic, "JMP") == 0
+		|| strcmp(instr->mnemonic, "JZ")  == 0
+		|| strcmp(instr->mnemonic, "JNZ") == 0) {
+		src = resolve_addressing(cpu, instr->operand1);
+		return handle_instruction(cpu, instr, NULL, src);
+	}
+
+	// 3) HALT : pas d'opérandes, handle_instruction s'en charge
+	if (strcmp(instr->mnemonic, "HALT") == 0) {
+		return handle_instruction(cpu, instr, NULL, NULL);
+	}
+
+	
+	return 0;
 }
 
 Instruction* fetch_next_instruction(CPU *cpu) {
@@ -545,6 +566,7 @@ int run_program(CPU *cpu) {
 	char q = 'd';
 	printf("\n=== État initial du CPU ===\n");
 	print_cpu(cpu);
+
 
 	Segment* CS = hashmap_get(cpu->memory_handler->allocated, "CS");
 
@@ -573,7 +595,7 @@ int run_program(CPU *cpu) {
 
 	printf("\n=== État final du CPU ===\n");
 	print_cpu(cpu);
-	
+
 	return 0;
 }
 
