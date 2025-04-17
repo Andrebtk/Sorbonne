@@ -104,7 +104,8 @@ int main() {
 	*/
 
 	
-	//EXO 6 
+	//EXO 6/7/8
+	
 	CPU *cpu = cpu_init(1024);
 	ParserResult *p = parse("assembler2.txt");
 
@@ -116,8 +117,8 @@ int main() {
 	allocate_code_segment(cpu, p->code_instructions, p->code_count);
 	
 	
-
+	//segment_override_addressing(cpu,"[ES:AX]");
 	run_program(cpu);
-	
+
 	//afficher_ParserResult(p);
 }

@@ -40,6 +40,7 @@ CPU *cpu_init(int memory_size) {
     int *SF = malloc(sizeof(int));
     int *SP = malloc(sizeof(int));
     int *BP = malloc(sizeof(int));
+	int *ES = malloc(sizeof(int));
     
 
 
@@ -50,6 +51,7 @@ CPU *cpu_init(int memory_size) {
     *IP=0;
     *ZF=0;
     *SF=0;
+	*ES=-1;
     
 
 
@@ -69,6 +71,8 @@ CPU *cpu_init(int memory_size) {
 
     hashmap_insert(res->context, "SP", (void*) SP);
     hashmap_insert(res->context, "BP", (void*) BP);
+
+	hashmap_insert(res->context, "ES", (void*) ES);
 
     return res;
 }
@@ -256,6 +260,9 @@ void *resolve_addressing(CPU *cpu, const char *operand) {
 	t = register_indirect_addressing(cpu, operand);
 	if(t != NULL) { return t; }
 
+	t = segment_override_addressing(cpu, operand);
+	if(t != NULL) { return t; }
+
 	return NULL;
 }
 
@@ -344,10 +351,8 @@ int search_and_replace(char **str, HashMap *values) {
 
 
 
-
-
 // 1) Remplace les labels (ex: "loop" → "1")
-static void replace_label(Instruction *instr, HashMap *labels) {
+void replace_label(Instruction *instr, HashMap *labels) {
     // operand1
     if (instr->operand1) {
         int *p = hashmap_get(labels, instr->operand1);
@@ -371,7 +376,7 @@ static void replace_label(Instruction *instr, HashMap *labels) {
 }
 
 // 2) Remplace les variables mémoire entre crochets (ex: "[X]" → "[0]")
-static void replace_memvar(Instruction *instr, HashMap *memloc) {
+void replace_memvar(Instruction *instr, HashMap *memloc) {
     for (int k = 0; k < 2; k++) {
         char **op = (k == 0 ? &instr->operand1 : &instr->operand2);
         if (!*op) continue;
@@ -478,6 +483,11 @@ int handle_instruction(CPU *cpu, Instruction *instr, void *dst, void *src) {
 	else if (strcmp(instr->mnemonic, "POP")==0) {
 		int *d = (dst == NULL) ? hashmap_get(cpu->context, "AX") : dst;
 		pop_value(cpu, d);
+	}else if (strcmp(instr->mnemonic, "ALLOC")==0){
+		
+		alloc_es_segment(cpu);
+	}else if(strcmp(instr->mnemonic, "FREE")==0){
+		free_es_segment(cpu);
 	}
 
 
@@ -489,7 +499,7 @@ int handle_instruction(CPU *cpu, Instruction *instr, void *dst, void *src) {
 int execute_instruction(CPU *cpu, Instruction *instr) {
     void *src = NULL, *dst = NULL;
 
-	// 1) MOV / ADD / CMP : deux opérandes
+	// Deux opérandes
 	if (strcmp(instr->mnemonic, "MOV") == 0
 		|| strcmp(instr->mnemonic, "ADD") == 0
 		|| strcmp(instr->mnemonic, "CMP") == 0
@@ -500,7 +510,7 @@ int execute_instruction(CPU *cpu, Instruction *instr) {
 		return handle_instruction(cpu, instr, dst, src);
 	}
 
-	// 2) JMP / JZ / JNZ : un seul opérande (la cible)
+	// Un seul opérande (la cible)
 	if (strcmp(instr->mnemonic, "JMP") == 0
 		|| strcmp(instr->mnemonic, "JZ")  == 0
 		|| strcmp(instr->mnemonic, "JNZ") == 0) {
@@ -508,8 +518,11 @@ int execute_instruction(CPU *cpu, Instruction *instr) {
 		return handle_instruction(cpu, instr, NULL, src);
 	}
 
-	// 3) HALT : pas d'opérandes, handle_instruction s'en charge
-	if (strcmp(instr->mnemonic, "HALT") == 0) {
+	// Pas d'opérandes, handle_instruction s'en charge
+	if (strcmp(instr->mnemonic, "HALT") == 0
+		|| strcmp(instr->mnemonic, "ALLOC") == 0
+		|| strcmp(instr->mnemonic, "FREE") == 0) {
+		printf("%s \n", instr->mnemonic);
 		return handle_instruction(cpu, instr, NULL, NULL);
 	}
 
@@ -612,11 +625,91 @@ int pop_value(CPU *cpu, int *dest) {
 }
 
 void* segment_override_addressing(CPU* cpu, const char* operand){
-    char SEGMENT[100];
-	char REGISTRE[100];
-    /*if (matches("\[[a-zA-Z]{2}:[a-zA-Z]{2}\]$",operand)==0) {
-        sscanf(operand, "[%[^:]:%s]", SEGMENT, REGISTRE);
-        //recherche dans cpu de SEGMENT et renvoie l'addresse dans memory
-    }*/
+
+	const char* pattern = "\\[[A-Z]{2}:[A-Z]{2}\\]";
+
+	if (!matches(pattern, operand)){
+		return NULL;
+	}
+	printf("he\n");
+
+	char seg[3];
+	char reg[3];
+	
+	sscanf("[%2s:%2s]", seg, reg);
+	
+	seg[2] = '\0';
+	reg[2] = '\0';
+
+
+	int* r = hashmap_get(cpu->context, reg);
+	return load(cpu->memory_handler, seg, *r);
 }
 
+int find_free_address_strategy(MemoryHandler *handler, int size, int strategy){
+	Segment *selected = NULL;
+	Segment *current = handler->free_list;
+
+
+	while(current != NULL) {
+
+		if(current->size > size) {
+			if(strategy == 0) {
+				return current->start;
+			} else if(strategy == 1) {
+				if(!selected || (current->size < selected->size)) {
+					selected = current;
+				}
+			} else if(strategy == 2) {
+				if(!selected || (current->size > selected->size)) {
+					selected = current;
+				}
+			}
+
+		}
+		current = current->next;
+	}
+
+	return (selected)? selected->start: -1;
+}
+
+
+int alloc_es_segment(CPU *cpu){
+	int *AX = hashmap_get(cpu->context, "AX");
+	int *BX = hashmap_get(cpu->context, "BX");
+	int *ZF = hashmap_get(cpu->context, "ZF");
+	int *ES = hashmap_get(cpu->context, "ES");
+	
+	int addr = find_free_address_strategy(cpu->memory_handler, *AX, *BX);
+
+	if(addr == -1) {
+		*ZF=1;
+		return 0;
+	}
+	
+	create_segment(cpu->memory_handler,"ES",addr, *AX);
+	
+	for(int i=0; i<*AX; i++) {
+		int* v = malloc(sizeof(int));
+		*v = 0;
+		cpu->memory_handler->memory[addr + i] = (void *) v; 
+	}
+
+	*ZF=0;
+	*ES=addr;
+}
+
+int free_es_segment(CPU *cpu){
+	int *ES_reg = hashmap_get(cpu->context, "ES");
+	Segment* ES_seg = hashmap_get(cpu->memory_handler->allocated, "ES");
+
+	for(int i=0; i<ES_seg->size; i++) {
+		free(cpu->memory_handler->memory[*ES_reg + i]);
+		cpu->memory_handler->memory[*ES_reg + i] = NULL;
+	}
+
+	remove_segment(cpu->memory_handler, "ES");
+	*ES_reg=-1;
+
+	return 0;
+}
