@@ -3,5 +3,8 @@ X DW 42
 Y DB 10
 .CODE
 start: MOV AX,[X]
-loop: ADD BX,[Y]
-JMP loop
+ADD BX,[Y]
+PUSH BX
+PUSH AX
+POP DX
+PUSH DX

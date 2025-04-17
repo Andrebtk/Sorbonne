@@ -29,6 +29,8 @@ CPU *cpu_init(int memory_size) {
     res->context = hashmap_create();
     res->constant_pool = hashmap_create();
 
+	create_segment(res->memory_handler, "SS", 0, 128);
+
     int *AX = malloc(sizeof(int));
     int *BX = malloc(sizeof(int));
     int *CX = malloc(sizeof(int));
@@ -36,8 +38,6 @@ CPU *cpu_init(int memory_size) {
     int *IP = malloc(sizeof(int));
     int *ZF = malloc(sizeof(int));
     int *SF = malloc(sizeof(int));
-    
-    
     int *SP = malloc(sizeof(int));
     int *BP = malloc(sizeof(int));
     
@@ -47,15 +47,15 @@ CPU *cpu_init(int memory_size) {
     *BX=0;
     *CX=0;
     *DS=0;
-    *IP = 0;
-    *ZF = 0;
-    *SF = 0;
+    *IP=0;
+    *ZF=0;
+    *SF=0;
     
 
 
-    void* ss = hashmap_get(res->memory_handler->allocated, "SS");
-    SP=ss;
-    BP=ss;
+    Segment* ss = hashmap_get(res->memory_handler->allocated, "SS");
+    *SP=ss->size;
+    *BP=ss->size;
 
 
     hashmap_insert(res->context, "AX", (void*) AX);
@@ -73,48 +73,6 @@ CPU *cpu_init(int memory_size) {
     return res;
 }
 
-//REGARDER allocate_code_segment qui est similaire
-int push_value(CPU *cpu, int value) { //refaire et verifier
-    Segment* ss = hashmap_get(cpu->memory_handler->allocated, "SS");
-    
-    int cpt=0;
-    while(ss->next != NULL) {
-        ss = ss->next;
-        cpt++;
-    }
-
-    if(cpt >= ss->size){
-        return -1;
-    }
-
-    Segment *new_seg = malloc(sizeof(Segment));
-    new_seg->start = ss->start; //potientiel erreur
-    new_seg->size = ss->size;
-    new_seg->next = NULL;
-    ss->next = new_seg;
-    //cpu->memory_handler->memory[new_seg->start + new_seg->size] = (void*) value; //Pas sur 
-
-    Segment* sp = hashmap_get(cpu->context, "SP");
-    *sp=*new_seg;
-
-    return 0;
-}
-
-int pop_value(CPU *cpu, int *dest) {
-    Segment* ss = hashmap_get(cpu->memory_handler->allocated, "SS");
-    if(ss==NULL){
-        return -1;
-    }
-
-    while(ss->next != NULL) {
-        ss = ss->next;
-    }
-
-    //*dest = cpu->memory_handler->memory[ss->start + ss->size];
-    Segment* sp = hashmap_get(cpu->context, "SP");
-    sp=ss;
-    return 0;
-}
 
 int matches ( const char * pattern , const char * string ) {
     regex_t regex ;
@@ -448,9 +406,6 @@ int resolve_constants(ParserResult *result) {
 }
 
 
-
-
-
 void allocate_code_segment(CPU *cpu, Instruction **code_instructions, int code_count) {
 
 
@@ -514,7 +469,19 @@ int handle_instruction(CPU *cpu, Instruction *instr, void *dst, void *src) {
 		int *ip = hashmap_get(cpu->context, "IP");
 		// on considère que CS démarre à 0
 		*ip = cs->size;
+	} 
+	else if (strcmp(instr->mnemonic, "PUSH")==0) {
+		int *s = (src == NULL) ? hashmap_get(cpu->context, "AX") : src;
+		push_value(cpu, *s);
+		
 	}
+	else if (strcmp(instr->mnemonic, "POP")==0) {
+		int *d = (dst == NULL) ? hashmap_get(cpu->context, "AX") : dst;
+		pop_value(cpu, d);
+	}
+
+
+
 	return 0;
 }
 
@@ -525,7 +492,9 @@ int execute_instruction(CPU *cpu, Instruction *instr) {
 	// 1) MOV / ADD / CMP : deux opérandes
 	if (strcmp(instr->mnemonic, "MOV") == 0
 		|| strcmp(instr->mnemonic, "ADD") == 0
-		|| strcmp(instr->mnemonic, "CMP") == 0) {
+		|| strcmp(instr->mnemonic, "CMP") == 0
+		|| strcmp(instr->mnemonic, "PUSH")==0
+		|| strcmp(instr->mnemonic, "POP")==0 ){
 		dst = resolve_addressing(cpu, instr->operand1);
 		src = resolve_addressing(cpu, instr->operand2);
 		return handle_instruction(cpu, instr, dst, src);
@@ -551,11 +520,11 @@ int execute_instruction(CPU *cpu, Instruction *instr) {
 Instruction* fetch_next_instruction(CPU *cpu) {
 	Segment* CS = hashmap_get(cpu->memory_handler->allocated, "CS");
 	int* IP = hashmap_get(cpu->context,"IP");
+	if(( IP != NULL) && (CS != NULL) && (*IP < CS->start + CS->size)) { 
 
-	if(( IP != NULL) && (CS != NULL) && (*IP < CS->start + CS->size)) { //NOT SURE HERE
-		Instruction* instr = (Instruction*) load(cpu->memory_handler, "CS", *IP);
-        (*IP)++;
-        return instr;
+		Instruction* instr = load(cpu->memory_handler, "CS", *IP);
+		(*IP)++;
+		return instr;
 	}
 
 	return NULL;
@@ -583,9 +552,16 @@ int run_program(CPU *cpu) {
 			instr->mnemonic, 
 			instr->operand1 ? instr->operand1 : "",
 			instr->operand2 ? instr->operand2 : "");
+		
+		
 
+		
 		execute_instruction(cpu, instr);
 		
+		Segment* ss = hashmap_get(cpu->memory_handler->allocated, "SS");
+		for(int i=120; i<ss->size; i++){
+			printf("%d => %p \n", i, load(cpu->memory_handler, "SS", i));
+		}
 
 		printf("\nAppuyez sur Entrée pour continuer (q pour quitter)...");
 		scanf("%c", &q);
@@ -599,6 +575,41 @@ int run_program(CPU *cpu) {
 	return 0;
 }
 
+
+int push_value(CPU *cpu, int value) {
+    Segment *ss = hashmap_get(cpu->memory_handler->allocated, "SS");
+    int *sp = hashmap_get(cpu->context, "SP");
+
+	(*sp)--;
+
+
+    if (*sp < ss->start) return -1;
+
+	int *cell = malloc(sizeof(int));
+    *cell = value;
+    cpu->memory_handler->memory[*sp] = cell;
+
+    return 0;
+}
+
+int pop_value(CPU *cpu, int *dest) {
+	Segment *ss = hashmap_get(cpu->memory_handler->allocated, "SS");
+	int *sp = hashmap_get(cpu->context, "SP");
+
+	if (*sp >= ss->start + ss->size - 1) return -1;
+
+	int *cell = cpu->memory_handler->memory[*sp];
+	if (!cell) return -1;
+
+	*dest = *cell;
+
+	free(cell);
+	cpu->memory_handler->memory[*sp] = NULL;
+	
+	(*sp)++;
+	
+	return 0;
+}
 
 void* segment_override_addressing(CPU* cpu, const char* operand){
     char SEGMENT[100];

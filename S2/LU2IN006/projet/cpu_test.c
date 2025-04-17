@@ -106,19 +106,17 @@ int main() {
 	
 	//EXO 6 
 	CPU *cpu = cpu_init(1024);
-	//print_cpu(cpu);
-	
 	ParserResult *p = parse("assembler2.txt");
 
-	resolve_constants(p); //NOT WORKING YET
+	resolve_constants(p); 
 	//afficher_ParserResult(p);
 	
 	allocate_variables(cpu,  p->data_instructions, p->data_count);
-	
+
 	allocate_code_segment(cpu, p->code_instructions, p->code_count);
 	
 	
-	//print_cpu(cpu);
+
 	run_program(cpu);
 	
 	//afficher_ParserResult(p);
