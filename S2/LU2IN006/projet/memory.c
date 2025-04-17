@@ -128,28 +128,28 @@ int remove_segment(MemoryHandler *handler, const char *name){
 	Segment *new = hashmap_get(handler->allocated, name);
 	hashmap_remove(handler->allocated,name);
 	Segment *seg_free=handler->free_list;
-	Segment *prec;
+	Segment *prec = NULL;
 
 	while (seg_free && seg_free->start < new->start) {
-        prec = seg_free;
-        seg_free = seg_free->next;
-    }
+		prec = seg_free;
+		seg_free = seg_free->next;
+	}
 
-    if (prec && prec->start + prec->size == new->start) {
-        prec->size +=new->size;
-        free(new);
-        new = prec;
-    } else {
-        new->next = seg_free;
-        if (prec) prec->next = new;
-        else handler->free_list = new;
-    }
+	if (prec && prec->start + prec->size == new->start) {
+		prec->size +=new->size;
+		free(new);
+		new = prec;
+	} else {
+		new->next = seg_free;
+		if (prec) prec->next = new;
+		else handler->free_list = new;
+	}
 
-    if (seg_free && new->start + new->size == seg_free->start) {
-        new->size += seg_free->size;
-        new->next =seg_free->next;
-        free(seg_free);
-    }
+	if (seg_free && new->start + new->size == seg_free->start) {
+		new->size += seg_free->size;
+		new->next =seg_free->next;
+		free(seg_free);
+	}
 	return 0;
 }
 

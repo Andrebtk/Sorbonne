@@ -7,19 +7,22 @@
 
 void print_cpu(CPU* cpu){
 
-    //print_memory(cpu->memory_handler);
 	print_memory(cpu->memory_handler);
 
-	
-    printf("\nTable de hachage \"context\"\n");
-    afficher_hashmap(cpu->context);
-    
-    printf("\nTable de hachage \"constant_pool\"\n");
-    afficher_hashmap(cpu->constant_pool);
+
+	printf("\nTable de hachage \"context\"\n");
+	afficher_hashmap(cpu->context);
+
+	printf("\nTable de hachage \"constant_pool\"\n");
+	afficher_hashmap(cpu->constant_pool);
 
 
-	printf("\nData Segment\n\n");
-	print_data_segment(cpu);
+	print_segment_data(cpu, "DS");
+
+
+	if (hashmap_get(cpu->memory_handler->allocated, "ES") != NULL) {
+		print_segment_data(cpu, "ES");
+	}
 }
 
 
@@ -103,7 +106,7 @@ void cpu_destroy(CPU *cpu) {
 void* store(MemoryHandler *handler, const char *segment_name, int pos, void *data) {
     
 	Segment* seg=hashmap_get(handler->allocated, segment_name);
-	if((seg != NULL) && (pos <= seg->size)){
+	if((seg != NULL) && (pos < seg->size)){
 		handler->memory[seg->start + pos] = data;
 	}
 
@@ -172,18 +175,19 @@ void allocate_variables(CPU *cpu, Instruction** data_instructions, int data_coun
 }
 
 
-void print_data_segment(CPU *cpu) {
-	Segment* ds=hashmap_get(cpu->memory_handler->allocated, "DS");
-	if (ds == NULL) {
-		printf("Segment DS pas trouver \n");
+void print_segment_data(CPU *cpu, const char *segment_name) {
+	Segment* seg = hashmap_get(cpu->memory_handler->allocated, segment_name);
+	if (seg == NULL) {
+		printf("Segment %s not found\n", segment_name);
 		return;
 	}
-
-
-	for (int i=0; i< ds->size; i++) {
-		int* a = load(cpu->memory_handler, "DS", i);
-		if (a != NULL) {
-			printf("%d: %d\n", i, *a);
+	printf("\n%s Segment\n\n", segment_name);
+	for (int i = 0; i < seg->size; i++) {
+		int* val = load(cpu->memory_handler, segment_name, i);
+		if (val != NULL) {
+			printf("%d: %d\n", i, *val);
+		} else {
+			printf("%d: (nil)\n", i);
 		}
 	}
 }
@@ -248,6 +252,7 @@ void *register_indirect_addressing(CPU *cpu, const char *operand) {
 }
 
 void *resolve_addressing(CPU *cpu, const char *operand) {
+
 	void* t = immediate_addressing(cpu, operand);
 	if(t != NULL) { return t; }
 
@@ -261,6 +266,7 @@ void *resolve_addressing(CPU *cpu, const char *operand) {
 	if(t != NULL) { return t; }
 
 	t = segment_override_addressing(cpu, operand);
+	
 	if(t != NULL) { return t; }
 
 	return NULL;
@@ -484,7 +490,6 @@ int handle_instruction(CPU *cpu, Instruction *instr, void *dst, void *src) {
 		int *d = (dst == NULL) ? hashmap_get(cpu->context, "AX") : dst;
 		pop_value(cpu, d);
 	}else if (strcmp(instr->mnemonic, "ALLOC")==0){
-		
 		alloc_es_segment(cpu);
 	}else if(strcmp(instr->mnemonic, "FREE")==0){
 		free_es_segment(cpu);
@@ -498,7 +503,11 @@ int handle_instruction(CPU *cpu, Instruction *instr, void *dst, void *src) {
 
 int execute_instruction(CPU *cpu, Instruction *instr) {
     void *src = NULL, *dst = NULL;
-
+	if (instr == NULL) {
+		printf("[ERROR]Instruciton is NULL\n");
+		return -1;
+	}
+	
 	// Deux opérandes
 	if (strcmp(instr->mnemonic, "MOV") == 0
 		|| strcmp(instr->mnemonic, "ADD") == 0
@@ -507,6 +516,9 @@ int execute_instruction(CPU *cpu, Instruction *instr) {
 		|| strcmp(instr->mnemonic, "POP")==0 ){
 		dst = resolve_addressing(cpu, instr->operand1);
 		src = resolve_addressing(cpu, instr->operand2);
+
+		if(dst == NULL || src == NULL) return -1; 
+
 		return handle_instruction(cpu, instr, dst, src);
 	}
 
@@ -515,6 +527,9 @@ int execute_instruction(CPU *cpu, Instruction *instr) {
 		|| strcmp(instr->mnemonic, "JZ")  == 0
 		|| strcmp(instr->mnemonic, "JNZ") == 0) {
 		src = resolve_addressing(cpu, instr->operand1);
+
+		if(src == NULL) return -1; 
+		
 		return handle_instruction(cpu, instr, NULL, src);
 	}
 
@@ -522,7 +537,7 @@ int execute_instruction(CPU *cpu, Instruction *instr) {
 	if (strcmp(instr->mnemonic, "HALT") == 0
 		|| strcmp(instr->mnemonic, "ALLOC") == 0
 		|| strcmp(instr->mnemonic, "FREE") == 0) {
-		printf("%s \n", instr->mnemonic);
+
 		return handle_instruction(cpu, instr, NULL, NULL);
 	}
 
@@ -533,9 +548,10 @@ int execute_instruction(CPU *cpu, Instruction *instr) {
 Instruction* fetch_next_instruction(CPU *cpu) {
 	Segment* CS = hashmap_get(cpu->memory_handler->allocated, "CS");
 	int* IP = hashmap_get(cpu->context,"IP");
-	if(( IP != NULL) && (CS != NULL) && (*IP < CS->start + CS->size)) { 
+	if(( IP != NULL) && (CS != NULL) && (*IP < CS->size)) { 
 
 		Instruction* instr = load(cpu->memory_handler, "CS", *IP);
+		
 		(*IP)++;
 		return instr;
 	}
@@ -625,25 +641,32 @@ int pop_value(CPU *cpu, int *dest) {
 }
 
 void* segment_override_addressing(CPU* cpu, const char* operand){
-
+	
 	const char* pattern = "\\[[A-Z]{2}:[A-Z]{2}\\]";
 
 	if (!matches(pattern, operand)){
 		return NULL;
 	}
-	printf("he\n");
+	
 
 	char seg[3];
 	char reg[3];
 	
-	sscanf("[%2s:%2s]", seg, reg);
+	sscanf(operand, "[%2[^:]:%2[^]]]", seg, reg);
 	
 	seg[2] = '\0';
 	reg[2] = '\0';
 
+	int* reg_value = hashmap_get(cpu->context, reg);
+	if (!reg_value) return NULL;
 
-	int* r = hashmap_get(cpu->context, reg);
-	return load(cpu->memory_handler, seg, *r);
+	Segment* segment = hashmap_get(cpu->memory_handler->allocated, seg);
+	if (!segment || *reg_value < 0 || *reg_value >= segment->size) {
+		printf("[ERROR] OUT OF BOUND\n");
+		return NULL;
+	}
+
+	return load(cpu->memory_handler, seg, *reg_value);
 }
 
 int find_free_address_strategy(MemoryHandler *handler, int size, int strategy){
@@ -687,16 +710,19 @@ int alloc_es_segment(CPU *cpu){
 		return 0;
 	}
 	
-	create_segment(cpu->memory_handler,"ES",addr, *AX);
-	
+	create_segment(cpu->memory_handler, "ES", addr, *AX);
+
 	for(int i=0; i<*AX; i++) {
 		int* v = malloc(sizeof(int));
 		*v = 0;
+
 		cpu->memory_handler->memory[addr + i] = (void *) v; 
 	}
-
+	
 	*ZF=0;
 	*ES=addr;
+	
+	return 0;
 }
 
 int free_es_segment(CPU *cpu){

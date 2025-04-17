@@ -117,8 +117,8 @@ int main() {
 	allocate_code_segment(cpu, p->code_instructions, p->code_count);
 	
 	
-	//segment_override_addressing(cpu,"[ES:AX]");
 	run_program(cpu);
 
+	cpu_destroy(cpu);
 	//afficher_ParserResult(p);
 }

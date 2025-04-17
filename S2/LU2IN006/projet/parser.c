@@ -96,27 +96,52 @@ Instruction *parse_data_instuction(const char *line, HashMap *memory_locations){
 }
 
 Instruction *parse_code_instruction(const char *line, HashMap *labels, int code_count){
-	char etiquette[Length];
-	char nom[Length];
-	char op1[Length];
-	char op2[Length];
+	char etiquette[Length] = {0};
+	char nom[Length] = {0};
+	char op1[Length] = {0};
+	char op2[Length] = {0};
 	Instruction *res = malloc(sizeof(Instruction));
 
 	int is_etiquette=0;
+	
 	if(strchr(line,':')){
-		is_etiquette=1;
 
-		if(strchr(line,',')) {
-			sscanf(line, "%[^:]: %s %[^,],%s", etiquette, nom, op1, op2);
-		} else {
-			sscanf(line, "%[^:]: %s %s", etiquette, nom, op1);
-			op2[0]='\0';
+		char *colon_ptr = strchr(line, ':');
+		char *space_ptr = strchr(line, ' ');
+
+		// if ':' appears *before* the first space → it's a label
+		if (colon_ptr && (!space_ptr || colon_ptr < space_ptr)) {
+			is_etiquette = 1;
+		
+			if (strchr(line, ',')) {
+				sscanf(line, "%[^:]: %s %[^,],%s", etiquette, nom, op1, op2);
+			} else {
+				sscanf(line, "%[^:]: %s %s", etiquette, nom, op1);
+				op2[0] = '\0';
+			}
+		}else{
+			if (strchr(line, ',')) {
+				sscanf(line, "%s %[^,],%s", nom, op1, op2);
+			} else {
+				int n = sscanf(line, "%s %s", nom, op1);
+				if (n < 2) {
+					op1[0] = '\0';
+				}
+				op2[0] = '\0';
+			}
+		
+			etiquette[0] = '\0';
 		}
-	} else {
+
+	} else { // it's -> [ES:AX] example
+		
 		if(strchr(line,',')){
 			sscanf(line, "%s %[^,],%s", nom, op1, op2);
 		} else {
-			sscanf(line, "%s %s", nom, op1);
+			int n = sscanf(line, "%s %s", nom, op1);
+			if (n < 2) {
+				op1[0] = '\0';
+			}
 			op2[0] = '\0';
 		}
 		
@@ -132,7 +157,8 @@ Instruction *parse_code_instruction(const char *line, HashMap *labels, int code_
 
 	res->mnemonic = strdup(nom);
 	res->operand1 = strdup(op1);
-	res->operand2 = strdup(op2);
+	res->operand2 = strdup(op2[0] ? op2 : "");
+
 
 	return res;
 }

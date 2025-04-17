@@ -28,12 +28,14 @@ void afficher_hashmap(HashMap* hp){
 	printf("size : %d\n", hp->size);
 	printf("current_mem : %d\n", hp->current_mem);
 
-	for (int i=0; i < TABLE_SIZE; i++) {
-		if (hp->table[i].value != NULL && hp->table[i].key != NULL) {  // Only print valid entries
-			printf("table[%d] : key = %s, value = %d\n", 
-				i, hp->table[i].key, *(int*)hp->table[i].value);
+	for (int i = 0; i < TABLE_SIZE; i++) {
+		char *k = hp->table[i].key;
+		void *v = hp->table[i].value;
+		if (k && k != TOMBSTONE && v && v != TOMBSTONE) {
+		  printf("table[%d] : key = %s, value = %d\n",
+				 i, k, *(int*)v);
 		}
-	}
+	  }
 }
 
 unsigned long simple_hash(const char *str) {
@@ -68,18 +70,22 @@ HashMap *hashmap_create() {
 int hashmap_insert(HashMap *map, const char *key, void *value) {
 
 	 
-	 int i=0;
-	 unsigned long k = h(key,i);
-	 
-	 while ((map->table[k].key != TOMBSTONE) && (map->table[k].key != NULL)) {
-	 	i++;
-	 	k = (h(key,i) % map->size); 	
-	 }
-     free(map->table[k].key);
-	 map->table[k].key = strdup(key);
-	 map->table[k].value = value;
+	int i=0;
+	unsigned long k = h(key,i);
+	
+	while ((map->table[k].key != TOMBSTONE) && (map->table[k].key != NULL)) {
+		i++;
+		k = (h(key,i) % map->size); 	
+	}
 
-	 return k;
+
+	if (map->table[k].key != NULL && map->table[k].key != TOMBSTONE) {
+		free(map->table[k].key);
+	}
+	map->table[k].key = strdup(key);
+	map->table[k].value = value;
+
+	return k;
 }
 
 
@@ -100,20 +106,20 @@ void *hashmap_get(HashMap *map, const char *key) {
 
 
 int hashmap_remove(HashMap *map, const char *key) {
-    int i = 0;
-    unsigned long k = h(key, i);
+	int i = 0;
+	unsigned long k = h(key, i);
 
-    while (map->table[k].key != NULL) {
-        if (strcmp(map->table[k].key, key) == 0) {
-            map->table[k].key = TOMBSTONE;
-            map->table[k].value = TOMBSTONE;
-            return 1;
-        }
-        i++;
-        k = (h(key, i) % map->size);
-    }
+	while (map->table[k].key != NULL) {
+		if (strcmp(map->table[k].key, key) == 0) {
+			map->table[k].key = TOMBSTONE;
+			map->table[k].value = TOMBSTONE;
+			return 1;
+		}
+		i++;
+		k = (h(key, i) % map->size);
+	}
 
-    return 0;
+	return 0;
 }
 
 void hashmap_destroy(HashMap *map) {
