@@ -11,7 +11,7 @@ void free_Instruction(Instruction *i) {
 		free(i->mnemonic);
 		free(i->operand1);
 		free(i->operand2);
-		free(i);
+		free(i); //comment or not ?
 	}
 }
 
@@ -24,11 +24,13 @@ void free_ParserResult(ParserResult *pr) {
 
 		for (int i=0; i<pr->data_count; i++) {
 			free_Instruction(pr->data_instructions[i]);
+			pr->data_instructions[i] = NULL;
 		}
 		free(pr->data_instructions);
 
 		for (int i=0; i<pr->code_count; i++) {
 			free_Instruction(pr->code_instructions[i]);
+			pr->code_instructions[i] = NULL;
 		}
 		free(pr->code_instructions);
 
@@ -154,6 +156,11 @@ Instruction *parse_code_instruction(const char *line, HashMap *labels, int code_
 		hashmap_insert(labels, etiquette, i);
 	}
 
+
+	if (strlen(op1) == 0) strcpy(op1, "");
+	
+	if (strlen(op2) == 0) strcpy(op2, "");
+	
 
 	res->mnemonic = strdup(nom);
 	res->operand1 = strdup(op1);

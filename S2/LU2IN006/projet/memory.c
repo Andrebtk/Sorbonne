@@ -126,7 +126,6 @@ int create_segment(MemoryHandler *handler, const char *name, int start, int size
 
 int remove_segment(MemoryHandler *handler, const char *name){
 	Segment *new = hashmap_get(handler->allocated, name);
-	hashmap_remove(handler->allocated,name);
 	Segment *seg_free=handler->free_list;
 	Segment *prec = NULL;
 
@@ -137,7 +136,7 @@ int remove_segment(MemoryHandler *handler, const char *name){
 
 	if (prec && prec->start + prec->size == new->start) {
 		prec->size +=new->size;
-		free(new);
+		//free(new); //ALL free in final function
 		new = prec;
 	} else {
 		new->next = seg_free;
@@ -148,8 +147,45 @@ int remove_segment(MemoryHandler *handler, const char *name){
 	if (seg_free && new->start + new->size == seg_free->start) {
 		new->size += seg_free->size;
 		new->next =seg_free->next;
-		free(seg_free);
+		//free(seg_free); //ALL free in final function
 	}
+
+	hashmap_remove(handler->allocated,name);
 	return 0;
 }
 
+void free_segments(Segment* seg) {
+	if(seg != NULL) {
+		free_segments(seg->next);
+		free(seg);
+	}
+}
+
+
+void free_memoryHandler(MemoryHandler *m) {
+	Segment* DS = hashmap_get(m->allocated, "DS");
+	if(DS) {
+		for(int i=0; i<DS->size; i++) {
+			free(m->memory[DS->start + i]);
+		}
+	}
+
+	Segment* CS = hashmap_get(m->allocated, "CS");
+	if(CS) {
+		for(int i=0; i<CS->size; i++){
+			free_Instruction(m->memory[CS->start + i]);
+		}
+	}
+
+	Segment* ES = hashmap_get(m->allocated, "ES");
+	if (ES) {
+		for (int i = 0; i < ES->size; i++) {
+			free(m->memory[ES->start + i]);
+		}
+	}
+
+	free(m->memory);
+	free_HashMap(m->allocated);
+	free_segments(m->free_list);
+	free(m);
+}

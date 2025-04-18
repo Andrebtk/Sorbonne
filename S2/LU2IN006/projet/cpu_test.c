@@ -119,6 +119,10 @@ int main() {
 	
 	run_program(cpu);
 
+	
 	cpu_destroy(cpu);
+
+	free_ParserResult(p);
+	
 	//afficher_ParserResult(p);
 }

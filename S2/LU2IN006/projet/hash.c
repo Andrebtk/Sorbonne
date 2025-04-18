@@ -15,12 +15,17 @@ void free_HashEntry(HashEntry *he) {
 void free_HashMap(HashMap *hm) {
     if (hm != NULL) {
         for (int i = 0; i < hm->size; i++) {
-            free(hm->table[i].key);
-            free(hm->table[i].value);
-        }
-        free(hm->table);
-        free(hm);
-    }
+			if(hm->table[i].key != NULL && hm->table[i].key != TOMBSTONE){
+				free(hm->table[i].key);
+			}
+
+			if(hm->table[i].value != NULL && hm->table[i].value != TOMBSTONE){
+				free(hm->table[i].value);
+			}
+		}
+		free(hm->table);
+		free(hm);
+	}
 }
 
 void afficher_hashmap(HashMap* hp){
@@ -57,6 +62,7 @@ HashMap *hashmap_create() {
 	HashMap *h = malloc(sizeof(HashMap));
 
 	h->size = TABLE_SIZE;
+	h->current_mem = 0; 
     h->table = malloc(sizeof(HashEntry) * TABLE_SIZE);
 
 	for (int i=0; i < TABLE_SIZE; i++) {
@@ -92,8 +98,11 @@ int hashmap_insert(HashMap *map, const char *key, void *value) {
 void *hashmap_get(HashMap *map, const char *key) {
 	int i=0;
 	unsigned long k = h(key,i);
+	if(map == NULL){
+		return NULL;
+	}
 	
-	while (map->table[k].key != NULL) {
+	while (map->table[k].key != TOMBSTONE && map->table[k].key != NULL) {
 		if(strcmp(map->table[k].key,key)==0) {
 			return map->table[k].value;
 		}
@@ -111,6 +120,12 @@ int hashmap_remove(HashMap *map, const char *key) {
 
 	while (map->table[k].key != NULL) {
 		if (strcmp(map->table[k].key, key) == 0) {
+			
+			if (map->table[k].key != TOMBSTONE)
+				free(map->table[k].key);
+			if (map->table[k].value != TOMBSTONE)
+				free(map->table[k].value);
+
 			map->table[k].key = TOMBSTONE;
 			map->table[k].value = TOMBSTONE;
 			return 1;

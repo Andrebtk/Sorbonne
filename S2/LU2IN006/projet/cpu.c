@@ -19,10 +19,16 @@ void print_cpu(CPU* cpu){
 
 	print_segment_data(cpu, "DS");
 
-
-	if (hashmap_get(cpu->memory_handler->allocated, "ES") != NULL) {
+	
+	void *check = hashmap_get(cpu->memory_handler->allocated, "ES");
+	
+	
+	if (check == NULL) {
+		printf("\nSegment ES not found.\n");
+	} else {
 		print_segment_data(cpu, "ES");
 	}
+	
 }
 
 
@@ -98,7 +104,7 @@ int matches ( const char * pattern , const char * string ) {
 void cpu_destroy(CPU *cpu) {
     free_HashMap(cpu->context);
     free_HashMap(cpu->constant_pool);
-    //free_memoryHandler(cpu->memory_handler);
+    free_memoryHandler(cpu->memory_handler);
     free(cpu);
 }
 
@@ -385,11 +391,11 @@ void replace_label(Instruction *instr, HashMap *labels) {
 void replace_memvar(Instruction *instr, HashMap *memloc) {
     for (int k = 0; k < 2; k++) {
         char **op = (k == 0 ? &instr->operand1 : &instr->operand2);
-        if (!*op) continue;
+		if (!*op || strlen(*op) < 3) continue; // Add length check
         size_t len = strlen(*op);
         if (len >= 3 && (*op)[0] == '[' && (*op)[len-1] == ']') {
             // on extrait le nom sans les crochets
-            char name[64];
+            char name[64] = {0}; 
             memcpy(name, *op + 1, len - 2);
             name[len-2] = '\0';
             int *p = hashmap_get(memloc, name);
@@ -434,6 +440,7 @@ void allocate_code_segment(CPU *cpu, Instruction **code_instructions, int code_c
 
 	for(int i=0; i<code_count; i++) {
 		cpu->memory_handler->memory[cs->start + i] = code_instructions[i];
+		code_instructions[i] = NULL;
 	}
 
 	int* ip = hashmap_get(cpu->context,"IP");
@@ -725,17 +732,21 @@ int alloc_es_segment(CPU *cpu){
 	return 0;
 }
 
-int free_es_segment(CPU *cpu){
+int free_es_segment(CPU *cpu) {
 	int *ES_reg = hashmap_get(cpu->context, "ES");
-	Segment* ES_seg = hashmap_get(cpu->memory_handler->allocated, "ES");
+	if (*ES_reg == -1) return -1; // Already freed
 
-	for(int i=0; i<ES_seg->size; i++) {
-		free(cpu->memory_handler->memory[*ES_reg + i]);
-		cpu->memory_handler->memory[*ES_reg + i] = NULL;
+	// Free ES memory cells
+	Segment* ES_seg = hashmap_get(cpu->memory_handler->allocated, "ES");
+	if (ES_seg) {
+		for (int i = 0; i < ES_seg->size; i++) {
+			free(cpu->memory_handler->memory[ES_seg->start + i]);
+		}
 	}
 
+	// Remove from allocated and add to free list
 	remove_segment(cpu->memory_handler, "ES");
-	*ES_reg=-1;
+	*ES_reg = -1;
 
 	return 0;
 }
