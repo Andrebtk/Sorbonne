@@ -3,6 +3,15 @@
 #include <stdlib.h>
 #include <string.h>
 
+//Fonction qui libere une structure de type HashEntry
+void free_HashEntry(HashEntry *he) {
+    if (he != NULL) {
+        free(he->key);
+        free(he->value);
+        free(he);
+    }
+}
+
 //Fonction qui libère la mémoire alloué par la table de hachage map
 void free_HashMap(HashMap *hm) {
     if (hm != NULL) {
@@ -87,14 +96,18 @@ int hashmap_insert(HashMap *map, const char *key, void *value) {
 void *hashmap_get(HashMap *map, const char *key) {
 	int i=0;
 	unsigned long k = h(key,i);
+	if(map == NULL){
+		return NULL;
+	}
 	
-	while (map->table[k].key != NULL) {
+	while (map->table[k].key != TOMBSTONE && map->table[k].key != NULL) {
 		if(strcmp(map->table[k].key,key)==0) {
 			return map->table[k].value;
 		}
 		i++;
 		k = (h(key,i) % map->size); 	
 	}
+	
 	return NULL;
 }
 
