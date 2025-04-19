@@ -123,8 +123,7 @@ int hashmap_remove(HashMap *map, const char *key) {
 			
 			if (map->table[k].key != TOMBSTONE)
 				free(map->table[k].key);
-			if (map->table[k].value != TOMBSTONE)
-				free(map->table[k].value);
+
 
 			map->table[k].key = TOMBSTONE;
 			map->table[k].value = TOMBSTONE;

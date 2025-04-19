@@ -8,3 +8,4 @@ MOV BX,[Z]
 ALLOC
 MOV [ES:BX],10
 FREE
+

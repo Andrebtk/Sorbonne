@@ -1,29 +1,49 @@
 #include "parser.h"
 #include <stdio.h>
 
-
-
 int main() {
-	HashMap *hp = hashmap_create();
-	/*
-	parse_data_instuction("X DW 3", hp);
-	parse_data_instuction("Y DB 4", hp);
-	Instruction* a = parse_data_instuction("arr DB 5,6,7,8", hp);
-	parse_data_instuction("z DB 9", hp);
+    int choice;
+    
+    do {
+        printf("\n=== Menu Principal ===\n");
+        printf("1. Tester le parsing de données et la table de hachage\n");
+        printf("2. Analyser un fichier assembleur\n");
+		printf("3. Quitter\n");
+        printf("Votre choix : ");
+        scanf("%d", &choice);
 
-	afficher_hashmap(hp);
-	affiche_Instruction(a);
-	*/
-	/*
-	parse_code_instruction("loop : MOV AX,6", hp, 0);
-	parse_code_instruction("ADD BX,10", hp, 1);
-	parse_code_instruction("end : JMP loop", hp, 2);
+        switch(choice) {
+            case 1: {
+                // Option 1 : Test de la table de hachage et du parsing .DATA
+                HashMap *hp = hashmap_create();
+                Instruction* a = parse_data_instuction("arr DB 5,6,7,8", hp);
+                Instruction* b = parse_data_instuction("z DB 9", hp);
+                
+                printf("\n=== Contenu de la table de hachage ===\n");
+                afficher_hashmap(hp);
+                
+                printf("\n=== Instructions extraites ===\n");
+                affiche_Instruction(a);
+                affiche_Instruction(b);
+                
+                free_HashMap(hp);
+                break;
+            }
+            case 2: {
+                // Option 2 : Analyse d'un fichier assembleur
+                ParserResult *p = parse("assembler.txt");
+                printf("\n=== Résultat de l'analyse ===\n");
+                afficher_ParserResult(p);
+                free_ParserResult(p);
+                break;
+            }
+			case 3:
+				printf("Exit !\n");
+				break;
+            default:
+                printf("Choix invalide. Réessayez.\n");
+        }
+    } while(choice != 3);
 
-	afficher_hashmap(hp);
-	*/
-
-	ParserResult *p = parse("assembler.txt");
-	//afficher_ParserResult(p);
-	free_ParserResult(p);
-	free_HashMap(hp);
+    return 0;
 }
