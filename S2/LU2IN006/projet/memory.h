@@ -21,8 +21,10 @@ MemoryHandler *memory_init(int size);
 Segment* find_free_segment(MemoryHandler* handler, int start, int size, Segment** prev);
 int create_segment(MemoryHandler *handler, const char *name, int start, int size);
 int remove_segment(MemoryHandler *handler, const char *name);
+char *trim(char *str);
+int search_and_replace(char **str, HashMap *values);
 void print_memory(MemoryHandler *m);
 void print_segments(Segment* s);
-
+void free_segments(Segment* seg);
 void free_memoryHandler(MemoryHandler *m);
 #endif
