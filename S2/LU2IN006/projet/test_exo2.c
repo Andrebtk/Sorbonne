@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "hash.h"
 #include "memory.h" 
-#include "parser.h"
+
 
 void menu() {
 	printf("\nOption:\n");
@@ -47,7 +47,8 @@ int main() {
                 remove_segment(handler, name);
                 break;
             }
-            case 3:{ print_memory(handler);
+            case 3:{ 
+                print_memory(handler);
                 break;
             }
             case 4: {
@@ -58,24 +59,6 @@ int main() {
         }
 
     } while(action!=4);
-    /*
-    // Initialisation du gestionnaire de mémoire
-    MemoryHandler *handler= memory_init(1024);
-
-    printf("\nCréation de segments mémoire\n");
-    create_segment(handler, "test1", 100, 50);
-    create_segment(handler, "test2", 200, 75);
-    create_segment(handler, "test3", 500, 100);
-
-    printf("\nAffichage de la mémoire\n");
-    print_memory(handler);
-    printf("\n");
-
-    printf("\nAffichage après uppression de test2\n");
-    remove_segment(handler, "test2");
-    print_memory(handler);
-    printf("\n");
-    free_memoryHandler(handler);
- */   
+      
     return 0;
 }

@@ -7,6 +7,11 @@
 
 //Fonction pour afficher la mémoire
 void print_memory(MemoryHandler *m) {
+	if(m == NULL) {
+		printf("Gestionnaire de mémoire non initialisé\n");
+		return;
+	}
+	
 	printf("\nAffichage MemoryHandler \n");
 	printf("taille total: %d\n", m->total_size);
 
