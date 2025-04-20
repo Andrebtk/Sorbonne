@@ -6,7 +6,10 @@
 
 
 void print_cpu(CPU* cpu){
-
+	if(cpu == NULL) {
+		printf("CPU is NULL\n");
+		return;
+	}
 	print_memory(cpu->memory_handler);
 
 
@@ -110,7 +113,6 @@ void cpu_destroy(CPU *cpu) {
 
 
 void* store(MemoryHandler *handler, const char *segment_name, int pos, void *data) {
-    
 	Segment* seg=hashmap_get(handler->allocated, segment_name);
 	if((seg != NULL) && (pos < seg->size)){
 		handler->memory[seg->start + pos] = data;
@@ -196,6 +198,10 @@ void print_segment_data(CPU *cpu, const char *segment_name) {
 			printf("%d: (nil)\n", i);
 		}
 	}
+}
+
+void print_data_segment(CPU *cpu) {
+	print_segment_data(cpu, "DS");
 }
 
 
