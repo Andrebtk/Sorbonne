@@ -6,31 +6,31 @@
 
 #define Length 100
 
+//Fonction qui libère la mémoire allouée pour une instruction
 void free_Instruction(Instruction *i) {
 	if (i != NULL) {
 		free(i->mnemonic);
 		free(i->operand1);
 		free(i->operand2);
-		free(i); //comment or not ?
+		free(i);
 	}
 }
 
-
+//Fonction qui libère toute la mémoire utilisée par le ParserResult
 void free_ParserResult(ParserResult *pr) {
 	if (pr != NULL) {
 		free_HashMap(pr->labels);
 		free_HashMap(pr->memory_locations);
 		
-
+		// Libération des instructions de la section .DATA
 		for (int i=0; i<pr->data_count; i++) {
 			free_Instruction(pr->data_instructions[i]);
-			pr->data_instructions[i] = NULL;
 		}
 		free(pr->data_instructions);
-
+		
+		// Libération des instructions de la section .CODE
 		for (int i=0; i<pr->code_count; i++) {
 			free_Instruction(pr->code_instructions[i]);
-			pr->code_instructions[i] = NULL;
 		}
 		free(pr->code_instructions);
 
@@ -38,15 +38,16 @@ void free_ParserResult(ParserResult *pr) {
 	}
 	
 }
-
+//Fonction pour affiche une instruction
 void affiche_Instruction(Instruction* a) {
 	printf("mnemonic: %s\n",a->mnemonic);
 	printf("operand1: %s\n",a->operand1);
 	printf("operand2: %s\n",a->operand2);
 }
 
+//Fonction pour afficher une structure de type ParserResult
 void afficher_ParserResult(ParserResult* p) {
-	if (p==NULL) { printf("Affichage NULL"); return; };
+	if (p==NULL) { printf("Affichage NULL"); return; }
 	printf("data_count: %d \n",p->data_count);
 
 	for (int i=0; i<p->data_count; i++) {
@@ -67,6 +68,7 @@ void afficher_ParserResult(ParserResult* p) {
 	
 }
 
+//Fonction qui analyse et stock une ligne de la section .DATA
 Instruction *parse_data_instuction(const char *line, HashMap *memory_locations){
 	char nom[Length];
 	char type[Length];
@@ -97,6 +99,7 @@ Instruction *parse_data_instuction(const char *line, HashMap *memory_locations){
 	return res;
 }
 
+//Fonction qui analyse et stock une ligne de la section .CODE
 Instruction *parse_code_instruction(const char *line, HashMap *labels, int code_count){
 	char etiquette[Length] = {0};
 	char nom[Length] = {0};
@@ -157,11 +160,6 @@ Instruction *parse_code_instruction(const char *line, HashMap *labels, int code_
 	}
 
 
-	if (strlen(op1) == 0) strcpy(op1, "");
-	
-	if (strlen(op2) == 0) strcpy(op2, "");
-	
-
 	res->mnemonic = strdup(nom);
 	res->operand1 = strdup(op1);
 	res->operand2 = strdup(op2[0] ? op2 : "");
@@ -170,6 +168,7 @@ Instruction *parse_code_instruction(const char *line, HashMap *labels, int code_
 	return res;
 }
 
+//Fonction de parsing qui construie la structure ParserResult à partir d'un ficher
 ParserResult *parse(const char *filename) {
 	FILE *f = fopen(filename,"r");
 	
