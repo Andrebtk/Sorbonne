@@ -497,14 +497,15 @@ int handle_instruction(CPU *cpu, Instruction *instr, void *dst, void *src) {
 	else if (strcmp(instr->mnemonic, "PUSH")==0) {
 		int *s = (src == NULL) ? hashmap_get(cpu->context, "AX") : src;
 		push_value(cpu, *s);
-		
 	}
 	else if (strcmp(instr->mnemonic, "POP")==0) {
 		int *d = (dst == NULL) ? hashmap_get(cpu->context, "AX") : dst;
 		pop_value(cpu, d);
-	}else if (strcmp(instr->mnemonic, "ALLOC")==0){
+	}
+	else if (strcmp(instr->mnemonic, "ALLOC")==0){
 		alloc_es_segment(cpu);
-	}else if(strcmp(instr->mnemonic, "FREE")==0){
+	}
+	else if(strcmp(instr->mnemonic, "FREE")==0){
 		free_es_segment(cpu);
 	}
 
@@ -521,12 +522,24 @@ int execute_instruction(CPU *cpu, Instruction *instr) {
 		return -1;
 	}
 	
+
+	if (strcmp(instr->mnemonic, "PUSH") == 0) {
+        int *src = resolve_addressing(cpu, instr->operand1);
+        if (!src) return -1;
+        return push_value(cpu, *src);
+    }
+
+
+    if (strcmp(instr->mnemonic, "POP") == 0) {
+        int *dst = resolve_addressing(cpu, instr->operand1);
+        if (!dst) return -1;
+        return pop_value(cpu, dst);
+    }
+
 	// Deux opérandes
 	if (strcmp(instr->mnemonic, "MOV") == 0
 		|| strcmp(instr->mnemonic, "ADD") == 0
-		|| strcmp(instr->mnemonic, "CMP") == 0
-		|| strcmp(instr->mnemonic, "PUSH")==0
-		|| strcmp(instr->mnemonic, "POP")==0 ){
+		|| strcmp(instr->mnemonic, "CMP") == 0 ){
 		dst = resolve_addressing(cpu, instr->operand1);
 		src = resolve_addressing(cpu, instr->operand2);
 
@@ -545,6 +558,8 @@ int execute_instruction(CPU *cpu, Instruction *instr) {
 		
 		return handle_instruction(cpu, instr, NULL, src);
 	}
+
+	
 
 	// Pas d'opérandes, handle_instruction s'en charge
 	if (strcmp(instr->mnemonic, "HALT") == 0
@@ -600,10 +615,18 @@ int run_program(CPU *cpu) {
 		
 		execute_instruction(cpu, instr);
 		
+		
 		Segment* ss = hashmap_get(cpu->memory_handler->allocated, "SS");
-		for(int i=120; i<ss->size; i++){
-			printf("%d => %p \n", i, load(cpu->memory_handler, "SS", i));
+		for(int i=120; i<ss->size; i++){	
+			int* v = load(cpu->memory_handler, "SS", i);
+			if(v == NULL) {
+				printf("%d => %p \n", i, v);
+			} else {
+				printf("%d => %d \n", i, *v);
+			}
+						
 		}
+		
 
 		printf("\nAppuyez sur Entrée pour continuer (q pour quitter)...");
 		scanf("%c", &q);

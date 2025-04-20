@@ -25,6 +25,7 @@ int main() {
         menu();
         printf("entrée une action: ");
         scanf("%d",&action);
+        
         switch(action) {
             case 1: {
                 printf("Choisissez la taille de votre gestionnaire de mémoire (>200)\n");
