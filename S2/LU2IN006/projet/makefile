@@ -1,26 +1,26 @@
 cpu: cpu_test.c cpu.o cpu.h parser.o memory.o
 	gcc -g -o cpu -g cpu_test.c cpu.o hash.o memory.o parser.o
 
-test_exo8: test_exo7.c cpu.o memory.o hash.o parser.o
-	gcc -o test_exo6 test_exo7.c cpu.o memory.o hash.o parser.o
+test_exo8: test_exo8.c cpu.o memory.o hash.o parser.o
+	gcc -o test_exo8 test_exo8.c cpu.o memory.o hash.o parser.o
 
-test_exo7: test_exo7.c cpu.o memory.o hash.o parser.o
-	gcc -o test_exo7 test_exo7.c cpu.o memory.o hash.o parser.o
+test_exo7: test_exo7.c cpu.o memory.o hash.o 
+	gcc -o test_exo7 test_exo7.c cpu.o memory.o hash.o 
 
 test_exo6: test_exo6.c cpu.o memory.o hash.o parser.o
 	gcc -o test_exo6 test_exo6.c cpu.o memory.o hash.o parser.o
 
-test_exo5: test_exo5.c cpu.o memory.o hash.o
-	gcc -o test_exo5 test_exo5.c cpu.o memory.o hash.o
+test_exo5: test_exo5.c cpu.o memory.o hash.o parser.o
+	gcc -o test_exo5 test_exo5.c cpu.o memory.o hash.o parser.o
 
 test_exo4: test_exo4.c cpu.o memory.o hash.o parser.o
 	gcc -o test_exo4 test_exo4.c cpu.o memory.o hash.o parser.o
-	
+
 test_exo3: test_exo3.c parser.o parser.o
 	gcc -o test_exo3 test_exo3.c parser.o hash.o
 
-test_exo2: test_exo2.c memory.o hash.o
-	gcc -o test_exo2 test_exo2.c memory.o hash.o
+test_exo2: test_exo2.c memory.o hash.o parser.o
+	gcc -o test_exo2 test_exo2.c memory.o hash.o parser.o
 
 test_exo1: test_exo1.c hash.o
 	gcc -o test_exo1 test_exo1.c hash.o
