@@ -1,7 +1,5 @@
 #include "hash.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+
 
 //Fonction qui libere une structure de type HashEntry
 void free_HashEntry(HashEntry *he) {
@@ -35,7 +33,7 @@ void afficher_hashmap(HashMap* hp){
 	printf("size : %d\n", hp->size);
 	printf("current_mem : %d\n", hp->current_mem);
 
-	for (int i = 0; i < TABLE_SIZE; i++) {
+	for (int i = 0; i < hp->size; i++) {
 		char *k = hp->table[i].key;
 		void *v = hp->table[i].value;
 		if (k && k != TOMBSTONE && v && v != TOMBSTONE) {
@@ -77,38 +75,37 @@ HashMap *hashmap_create() {
 //Fonction qui insère un élément dans la table de hachage map
 int hashmap_insert(HashMap *map, const char *key, void *value) {
 	int i=0;
-	unsigned long k = h(key,i);
+	unsigned long k = h(key,i); //utilisation de la fonction de probing pour trouver une place
 	
 	while ((map->table[k].key != TOMBSTONE) && (map->table[k].key != NULL)) {
 		i++;
 		k = (h(key,i) % map->size);
-		if (i > map->size){
+		if (i > map->size){ 
+			
 			return -1; // pas de place insertion raté
 		}
 	}
 	map->table[k].key = strdup(key);
 	map->table[k].value = value;
-
 	return 0; //insertion réussi
 }
 
 //Fonction permettant de récupérer un élément à partir de sa clé
 void *hashmap_get(HashMap *map, const char *key) {
 	int i=0;
-	unsigned long k = h(key,i);
+	unsigned long k = h(key,i); //utilisation de la fonction de probing pour trouver la clé
 	if(map == NULL){
 		return NULL;
 	}
 	
 	while (map->table[k].key != TOMBSTONE && map->table[k].key != NULL) {
 		if(strcmp(map->table[k].key,key)==0) {
-			return map->table[k].value;
+			return map->table[k].value; //retourne la valeur associé à la clé
 		}
 		i++;
 		k = (h(key,i) % map->size); 	
 	}
-	
-	return NULL;
+	return NULL; //retourne NULL si clé non trouvé
 }
 
 //Fonction qui supprime un élément dans la table de hachage map
@@ -125,7 +122,6 @@ int hashmap_remove(HashMap *map, const char *key) {
         i++;
         k = (h(key, i) % map->size);
     }
-
-    return -1; //suppression ratée
+    return -1; //élément non trouvé suppression ratée
 }
 
