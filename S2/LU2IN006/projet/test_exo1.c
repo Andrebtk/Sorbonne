@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include "hash.h"
 
+
+
 void menu() {
 	printf("\nOption:\n");
 	printf("0 - Initialiser la table de hachage\n");
@@ -14,6 +16,7 @@ void menu() {
 int main() {
     HashMap *map =NULL;
     int action;
+    char cle[100];
     do{
         menu();
         printf("entrée une action:\n");
@@ -32,21 +35,13 @@ int main() {
             }
             case 1: {
                 int *valeur=malloc(sizeof(int));
-                *valeur=10;
-                int *valeur2=malloc(sizeof(int));
-                *valeur2=100;
                 if(map==NULL){
                     printf("\nVeuillez d'abord initialiser le gestionnaire de mémoire\n");
                     break;
                 }else{
-                    printf("Insertion de 'test1' et 'test2' (on choisira un int pour la valeur pour facilité)\n");
-                    if(hashmap_insert(map, "test1", valeur)==-1){
-                        printf("pas de place insertion raté\n");
-                    }
-                    if(hashmap_insert(map, "test2", valeur2)==-1){
-                        printf("pas de place insertion raté\n");
-                    }
-                    
+                    printf("Veuillez choisir la clé et la valeur associé (on choisira un int pour la valeur pour facilité)\n");
+                    scanf("%s %d",cle, valeur);
+                    hashmap_insert(map, cle, valeur);
                     break;
                 }
             }
@@ -55,8 +50,9 @@ int main() {
                     printf("\nVeuillez d'abord initialiser le gestionnaire de mémoire\n");
                     break;
                 }else{
-                    printf("Suppression de 'test1\n");
-                    hashmap_remove(map,"test1");
+                    printf("Veuillez choisir la clé de l'élément a supprimer\n");
+                    scanf("%s",cle);
+                    hashmap_remove(map,cle);
                     break;
                 }
             }
@@ -65,8 +61,9 @@ int main() {
                     printf("\nVeuillez d'abord initialiser le gestionnaire de mémoire\n");
                     break;
                 }else{
-                    printf("recherche de la valeur associer a la cle: test2\n");
-                    int *res = (int*) hashmap_get(map, "test2");
+                    printf("Veuillez choisir la clé à rechercher\n");
+                    scanf("%s",cle);
+                    int *res = (int*) hashmap_get(map, cle);
                     if (res != NULL) {
                         printf("Valeur trouvée : %d\n", *res);
                         break;
