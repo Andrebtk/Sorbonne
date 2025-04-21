@@ -55,19 +55,21 @@ MemoryHandler *memory_init(int size) {
 	MemoryHandler *new = malloc(sizeof(MemoryHandler));
 	new->memory=malloc(size*sizeof(void*));
 
+	//Initialisation de memory
 	for(int i=0; i<size; i++){
 		new->memory[i]=NULL;
 	}
 
 	new->total_size=size;
 
+	//Initialisation d'un segment unique qui couvre toute la memoire
 	Segment *seg = malloc(sizeof(Segment));
 	seg->start = 0;
 	seg->size = size;
 	seg->next = NULL;
 	
 	new->free_list = seg;
-	new->allocated = hashmap_create();
+	new->allocated = hashmap_create(); //Création de la table de hachage 
 	
 	return new;
 }
@@ -84,18 +86,19 @@ Segment* find_free_segment(MemoryHandler* handler, int start, int size, Segment*
 		*prev = tmp;
 		tmp = tmp->next;
 	}
-	return NULL;
+	return NULL; //aucun segment correspondant au prérequis trouvé
 }
 
 //Fonction qui alloue un segment 
 int create_segment(MemoryHandler *handler, const char *name, int start, int size) {
 	Segment *prev = NULL;
-	Segment *n = find_free_segment(handler, start, size, &prev);
+	Segment *n = find_free_segment(handler, start, size, &prev); //Vérifier s'il y a de la place
 	
 	if(n == NULL) {
         printf("Error: %s %d\n", name, size);
-        return -1;
+        return -1; //pas de place trouvé
     }
+
 	Segment *new_seg = malloc(sizeof(Segment));
 	new_seg->start = start;
 	new_seg->size = size;
@@ -126,13 +129,14 @@ int create_segment(MemoryHandler *handler, const char *name, int start, int size
 	return 0;
 }
 
-//Fonction qui libere un segment
+//Fonction qui libere un segment et fusionne si nécessaire
 int remove_segment(MemoryHandler *handler, const char *name){
 	Segment *new = hashmap_get(handler->allocated, name);
 	if(new == NULL){
 		printf("Error segment non existant\n");
 		return -1;
 	}
+
 	hashmap_remove(handler->allocated,name);
 	Segment *seg_free=handler->free_list;
 	Segment *prec = NULL;
@@ -157,7 +161,6 @@ int remove_segment(MemoryHandler *handler, const char *name){
 		new->next =seg_free->next;
 		free(seg_free);
 	}
-	printf("Suppression réussi\n");
 	return 0;
 }
 

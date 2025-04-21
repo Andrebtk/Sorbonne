@@ -15,17 +15,15 @@ void menu() {
 int main() {
     MemoryHandler *handler=NULL;
     int action;
-    char name[100];
     do {
         menu();
         printf("entrée une action:\n");
         scanf("%d",&action);
+        printf("========================================\n");
 		switch (action){
             case 0: {
-                printf("Choisissez la taille de votre gestionnaire de mémoire\n");
-                int taille;
-                scanf("%d",&taille);
-                handler = memory_init(taille);
+                printf("Mémoire initialisé à une taille de 1O24\n");
+                handler = memory_init(1024);
                 break;
             }
             case 1: {
@@ -34,18 +32,22 @@ int main() {
                     printf("\nVeuillez d'abord initialiser le gestionnaire de mémoire\n");
                     break;
                 }else{
-                    printf("Veuillez choisir le nom, start et taille de votre segment(séparée par un espace)\n");
-                    scanf(" %s %d %d", name, &start, &size);
-                    create_segment(handler,name,start,size);
+                    printf("Création de 3 segments\n");
+                    create_segment(handler, "test1", 100, 50);
+                    create_segment(handler, "test2", 200, 75);
+                    create_segment(handler, "test3", 500, 100);
                     break;
                 }
             }
             case 2: {
-
-                printf("Veuillez entrer le nom du segment\n");
-                scanf("%s",name);
-                remove_segment(handler, name);
-                break;
+                if(handler==NULL){
+                    printf("\nVeuillez d'abord initialiser le gestionnaire de mémoire\n");
+                    break;
+                }else{
+                    printf("Suppression du segment 'test2'\n");
+                    remove_segment(handler, "test2");
+                    break;
+                }
             }
             case 3:{ 
                 print_memory(handler);
@@ -59,6 +61,6 @@ int main() {
         }
 
     } while(action!=4);
-      
+    
     return 0;
 }

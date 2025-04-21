@@ -75,7 +75,7 @@ Instruction *parse_data_instuction(const char *line, HashMap *memory_locations){
 	char valeur[Length];
 	int size=0;
 	
-	
+	//creation de l'instruction
 	sscanf(line, "%s %s %s",nom, type, valeur);
 	Instruction *res = malloc(sizeof(Instruction));
 	res->mnemonic = strdup(nom);
@@ -152,7 +152,7 @@ Instruction *parse_code_instruction(const char *line, HashMap *labels, int code_
 		
 		etiquette[0]='\0';
 	}
-	
+	//Ajout du label dans la table de hachage
 	if (is_etiquette==1) {
 		int *i = malloc(sizeof(int));
 		*i = code_count;
@@ -176,7 +176,7 @@ ParserResult *parse(const char *filename) {
 	char buffer[555];
 	int Data = 1;
 	
-
+	//initialisation
 	res->code_count = 0;
 	res->data_count = 0;
 	res->data_instructions = malloc(100*sizeof(Instruction*));
