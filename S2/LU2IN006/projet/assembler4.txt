@@ -1,0 +1,10 @@
+.DATA
+X DW 10
+Y DB 10
+Z DB 1
+.CODE
+start: MOV AX,[X]
+MOV BX,[Z]
+ALLOC
+MOV [ES:BX],10
+FREE

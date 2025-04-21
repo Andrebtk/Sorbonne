@@ -55,7 +55,6 @@ CPU *cpu_init(int memory_size) {
 	int *ES = malloc(sizeof(int));
     
 
-
 	*AX=0;
     *BX=0;
     *CX=0;
@@ -114,7 +113,18 @@ void cpu_destroy(CPU *cpu) {
 
 void* store(MemoryHandler *handler, const char *segment_name, int pos, void *data) {
 	Segment* seg=hashmap_get(handler->allocated, segment_name);
-	if((seg != NULL) && (pos < seg->size)){
+
+	if(seg == NULL) {
+		return NULL;
+	}
+	int addr = seg->start + pos;
+
+	void *old_data = handler->memory[addr];
+	if (old_data != NULL) {
+		free(old_data);
+	}
+
+	if(pos < seg->size){
 		handler->memory[seg->start + pos] = data;
 	}
 
@@ -278,7 +288,6 @@ void *resolve_addressing(CPU *cpu, const char *operand) {
 	if(t != NULL) { return t; }
 
 	t = segment_override_addressing(cpu, operand);
-	
 	if(t != NULL) { return t; }
 
 	return NULL;
@@ -676,6 +685,11 @@ int pop_value(CPU *cpu, int *dest) {
 	return 0;
 }
 
+
+
+
+
+
 void* segment_override_addressing(CPU* cpu, const char* operand){
 	
 	const char* pattern = "\\[[A-Z]{2}:[A-Z]{2}\\]";
@@ -732,8 +746,12 @@ int find_free_address_strategy(MemoryHandler *handler, int size, int strategy){
 	return (selected)? selected->start: -1;
 }
 
-
 int alloc_es_segment(CPU *cpu){
+
+	if (hashmap_get(cpu->memory_handler->allocated, "ES") != NULL) {
+		free_es_segment(cpu); // Ajoutez cette ligne
+	}
+
 	int *AX = hashmap_get(cpu->context, "AX");
 	int *BX = hashmap_get(cpu->context, "BX");
 	int *ZF = hashmap_get(cpu->context, "ZF");
@@ -746,7 +764,11 @@ int alloc_es_segment(CPU *cpu){
 		return 0;
 	}
 	
-	create_segment(cpu->memory_handler, "ES", addr, *AX);
+	if (create_segment(cpu->memory_handler, "ES", addr, *AX) == -1) {
+		*ZF = 1;  // Échec de la création
+		printf("ERRROR");
+		return 0;
+	}
 
 	for(int i=0; i<*AX; i++) {
 		int* v = malloc(sizeof(int));
@@ -765,17 +787,27 @@ int free_es_segment(CPU *cpu) {
 	int *ES_reg = hashmap_get(cpu->context, "ES");
 	if (*ES_reg == -1) return -1; // Already freed
 
-	// Free ES memory cells
-	Segment* ES_seg = hashmap_get(cpu->memory_handler->allocated, "ES");
-	if (ES_seg) {
-		for (int i = 0; i < ES_seg->size; i++) {
-			free(cpu->memory_handler->memory[ES_seg->start + i]);
+	Segment *es_seg = hashmap_get(cpu->memory_handler->allocated, "ES");
+	if (es_seg == NULL) {
+		printf("Avertissement: segment ES inexistant\n");
+		return -1;
+	}
+
+
+	// Libérer chaque donnée stockée dans le segment ES
+	for (int i = 0; i < es_seg->size; i++) {
+		void *data = load(cpu->memory_handler, "ES", i);
+		if (data != NULL) {
+			store(cpu->memory_handler, "ES", i, NULL);  // Reset mémoire
 		}
 	}
 
-	// Remove from allocated and add to free list
-	remove_segment(cpu->memory_handler, "ES");
-	*ES_reg = -1;
+	// Supprimer le segment et mettre à jour le registre ES
+	if (remove_segment(cpu->memory_handler, "ES") == 0) {
+		int *es_reg = hashmap_get(cpu->context, "ES");
+		if (es_reg) *es_reg = -1;
+		return 0;
+	}
 
-	return 0;
+	return -1;
 }

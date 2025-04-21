@@ -130,37 +130,55 @@ int create_segment(MemoryHandler *handler, const char *name, int start, int size
 }
 
 //Fonction qui libere un segment et fusionne si nécessaire
-int remove_segment(MemoryHandler *handler, const char *name){
-	Segment *new = hashmap_get(handler->allocated, name);
-	if(new == NULL){
-		printf("Error segment non existant\n");
+int remove_segment(MemoryHandler *handler, const char *name) {
+	// 1) Récupérer le segment à libérer
+	Segment *old = hashmap_get(handler->allocated, name);
+	if (!old) {
+		printf("Error: segment \"%s\" non existant\n", name);
 		return -1;
 	}
 
-	hashmap_remove(handler->allocated,name);
-	Segment *seg_free=handler->free_list;
-	Segment *prec = NULL;
+	// 2) Copier ses infos (start, size)
+	int start = old->start;
+	int size  = old->size;
 
-	while (seg_free && seg_free->start < new->start) {
-		prec = seg_free;
-		seg_free = seg_free->next;
+	// 3) Le retirer de la hashmap (libère 'old')
+	hashmap_remove(handler->allocated, name);
+
+
+	// 4) Recréer un nouveau Segment pour la free_list
+	Segment *node = malloc(sizeof *node);
+	node->start = start;
+	node->size  = size;
+	node->next  = NULL;
+
+	// 5) L'insérer trié par adresse croissante
+	Segment *cur  = handler->free_list;
+	Segment *prev = NULL;
+	while (cur && cur->start < node->start) {
+		prev = cur;
+		cur  = cur->next;
+	}
+	node->next = cur;
+	if (prev) prev->next = node;
+	else       handler->free_list = node;
+
+	// 6) Fusionner avec le précédent si contigu
+	if (prev && prev->start + prev->size == node->start) {
+		prev->size  += node->size;
+		prev->next   = node->next;
+		free(node);
+		node = prev;
 	}
 
-	if (prec && prec->start + prec->size == new->start) {
-		prec->size +=new->size;
-		free(new);
-		new = prec;
-	} else {
-		new->next = seg_free;
-		if (prec) prec->next = new;
-		else handler->free_list = new;
+	// 7) Fusionner avec le suivant si contigu
+	if (node->next && node->start + node->size == node->next->start) {
+		Segment *to_free = node->next;
+		node->size += to_free->size;
+		node->next = to_free->next;
+		free(to_free);
 	}
 
-	if (seg_free && new->start + new->size == seg_free->start) {
-		new->size += seg_free->size;
-		new->next =seg_free->next;
-		free(seg_free);
-	}
 	return 0;
 }
 
@@ -195,6 +213,7 @@ void free_memoryHandler(MemoryHandler *m) {
 			free(m->memory[ES->start + i]);
 		}
 	}
+
 
 	Segment* SS = hashmap_get(m->allocated, "SS");
 	if (SS) {

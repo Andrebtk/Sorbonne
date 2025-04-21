@@ -111,22 +111,22 @@ void *hashmap_get(HashMap *map, const char *key) {
 
 //Fonction qui supprime un élément dans la table de hachage map
 int hashmap_remove(HashMap *map, const char *key) {
-    int i = 0;
-    unsigned long k = h(key, i);
+	int i = 0;
+	unsigned long k = h(key, i);
 
-    while (map->table[k].key != NULL) {
-        if (strcmp(map->table[k].key, key) == 0) {
+	while (map->table[k].key != NULL) {
+		if (strcmp(map->table[k].key, key) == 0) {
 
 			free(map->table[k].key);
-            free(map->table[k].value);
+			free(map->table[k].value);
 
-            map->table[k].key = TOMBSTONE;
-            map->table[k].value = TOMBSTONE;
-            return 0; //suppression réussi
-        }
-        i++;
-        k = (h(key, i) % map->size);
-    }
-    return -1; //élément non trouvé suppression ratée
+			map->table[k].key = TOMBSTONE;
+			map->table[k].value = TOMBSTONE;
+			return 0; //suppression réussi
+		}
+		i++;
+		k = (h(key, i) % map->size);
+	}
+	return -1; //élément non trouvé suppression ratée
 }
 

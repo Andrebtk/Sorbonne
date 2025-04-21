@@ -141,6 +141,10 @@ int main() {
 			}
 
 			case 7: {
+				if (cpu == NULL) {
+					printf("Erreur: le CPU n'est pas initialisé\n");
+					break;
+				}
 				print_segment_data(cpu, "TEST");
 				break;
 			}
