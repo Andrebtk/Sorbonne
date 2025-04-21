@@ -15,6 +15,7 @@ void menu() {
 int main() {
     MemoryHandler *handler=NULL;
     int action;
+    char name[100];
     do {
         menu();
         printf("entrée une action:\n");
@@ -22,8 +23,10 @@ int main() {
         printf("========================================\n");
 		switch (action){
             case 0: {
-                printf("Mémoire initialisé à une taille de 1O24\n");
-                handler = memory_init(1024);
+                printf("Choisissez la taille de votre gestionnaire de mémoire\n");
+                int taille;
+                scanf("%d",&taille);
+                handler = memory_init(taille);
                 break;
             }
             case 1: {
@@ -32,10 +35,9 @@ int main() {
                     printf("\nVeuillez d'abord initialiser le gestionnaire de mémoire\n");
                     break;
                 }else{
-                    printf("Création de 3 segments\n");
-                    create_segment(handler, "test1", 100, 50);
-                    create_segment(handler, "test2", 200, 75);
-                    create_segment(handler, "test3", 500, 100);
+                    printf("Veuillez choisir le nom, start et taille de votre segment(séparée par un espace)\n");
+                    scanf(" %s %d %d", name, &start, &size);
+                    create_segment(handler,name,start,size);
                     break;
                 }
             }
@@ -44,8 +46,9 @@ int main() {
                     printf("\nVeuillez d'abord initialiser le gestionnaire de mémoire\n");
                     break;
                 }else{
-                    printf("Suppression du segment 'test2'\n");
-                    remove_segment(handler, "test2");
+                    printf("Veuillez entrer le nom du segment\n");
+                    scanf("%s",name);
+                    remove_segment(handler, name);
                     break;
                 }
             }
@@ -61,6 +64,6 @@ int main() {
         }
 
     } while(action!=4);
-    
+      
     return 0;
 }
