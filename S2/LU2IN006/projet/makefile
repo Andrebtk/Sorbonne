@@ -4,8 +4,8 @@ cpu: cpu_test.c cpu.o cpu.h parser.o memory.o
 test_exo8: test_exo8.c cpu.o memory.o hash.o parser.o
 	gcc -o test_exo8 test_exo8.c cpu.o memory.o hash.o parser.o
 
-test_exo7: test_exo7.c cpu.o memory.o hash.o 
-	gcc -o test_exo7 test_exo7.c cpu.o memory.o hash.o 
+test_exo7: test_exo7.c cpu.o memory.o hash.o parser.o
+	gcc -o test_exo7 test_exo7.c cpu.o memory.o hash.o parser.o
 
 test_exo6: test_exo6.c cpu.o memory.o hash.o parser.o
 	gcc -o test_exo6 test_exo6.c cpu.o memory.o hash.o parser.o

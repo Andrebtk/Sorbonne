@@ -196,6 +196,13 @@ void free_memoryHandler(MemoryHandler *m) {
 		}
 	}
 
+	Segment* SS = hashmap_get(m->allocated, "SS");
+	if (SS) {
+		for (int i = 0; i < SS->size; i++) {
+			free(m->memory[SS->start + i]);
+		}
+	}
+
 	free(m->memory);
 	free_HashMap(m->allocated);
 	free_segments(m->free_list);

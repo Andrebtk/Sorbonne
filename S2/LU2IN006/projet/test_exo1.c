@@ -75,6 +75,10 @@ int main() {
                 }
             }
             case 4: {
+				if(map==NULL){
+					printf("\nVeuillez d'abord initialiser le gestionnaire de mémoire\n");
+					break;
+				}
                 afficher_hashmap(map);
                 break;
             }
@@ -85,7 +89,7 @@ int main() {
         }
     }while(action != 5);
 
-    return 0;
+	return 0;
 
 }
 

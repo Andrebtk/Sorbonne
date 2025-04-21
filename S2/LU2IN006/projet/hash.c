@@ -54,7 +54,7 @@ unsigned long simple_hash(const char *str) {
 	return res % TABLE_SIZE;
 }
 
-//Fonction de probing
+//Fonction de probing lineaire
 int h(const char *str, int i) {
 	return (int) (simple_hash(str) + i);
 }
@@ -63,6 +63,7 @@ int h(const char *str, int i) {
 HashMap *hashmap_create() {
 	HashMap *new = malloc(sizeof(HashMap));
 	new->size = TABLE_SIZE;
+	new->current_mem = 0; 
 	new->table = malloc(sizeof(HashEntry) * TABLE_SIZE );
 
 	for (int i=0; i < TABLE_SIZE; i++) {
@@ -115,6 +116,10 @@ int hashmap_remove(HashMap *map, const char *key) {
 
     while (map->table[k].key != NULL) {
         if (strcmp(map->table[k].key, key) == 0) {
+
+			free(map->table[k].key);
+            free(map->table[k].value);
+
             map->table[k].key = TOMBSTONE;
             map->table[k].value = TOMBSTONE;
             return 0; //suppression réussi
