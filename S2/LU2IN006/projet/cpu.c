@@ -143,15 +143,13 @@ void allocate_variables(CPU *cpu, Instruction** data_instructions, int data_coun
 	int size_new_seg = 0;
 
 	for(int i=0; i<data_count; i++) {
-		if(strchr(data_instructions[i]->operand2,',')) {
-			char *token = strtok(data_instructions[i]->operand2, ",");
-			while (token != NULL) {
-				size_new_seg++;
-				token = strtok(NULL, ",");
-			}
-		} else {
+		char *temp = strdup(data_instructions[i]->operand2);
+		char *tok = strtok(temp, ",");
+		while (tok) {
 			size_new_seg++;
+			tok = strtok(NULL, ",");
 		}
+		free(temp);
 	}
 	
 	
@@ -160,6 +158,7 @@ void allocate_variables(CPU *cpu, Instruction** data_instructions, int data_coun
 	while (current) {
 		if (current->size >= size_new_seg) {
 			create_segment(cpu->memory_handler, "DS", current->start, size_new_seg); //Pour avoir le start dynamiquement
+			break;
 		}
 		current = current->next;
 	}
@@ -684,9 +683,6 @@ int pop_value(CPU *cpu, int *dest) {
 	
 	return 0;
 }
-
-
-
 
 
 
