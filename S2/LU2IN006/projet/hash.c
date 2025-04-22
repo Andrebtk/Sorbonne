@@ -3,11 +3,11 @@
 
 //Fonction qui libere une structure de type HashEntry
 void free_HashEntry(HashEntry *he) {
-    if (he != NULL) {
-        free(he->key);
-        free(he->value);
-        free(he);
-    }
+	if (he != NULL) {
+		free(he->key);
+		free(he->value);
+		free(he);
+	}
 }
 
 //Fonction qui libère la mémoire alloué par la table de hachage map
@@ -45,6 +45,7 @@ void afficher_hashmap(HashMap* hp){
 
 //Fonction de hachage
 unsigned long simple_hash(const char *str) {
+	if(strcmp(str,"")==0) return 0;
 	unsigned long res=0;
 	
 	for(int i=0; str[i] != '\0';i++) {
@@ -62,6 +63,10 @@ int h(const char *str, int i) {
 //Fonction qui alloue et initialise une table de hachage
 HashMap *hashmap_create() {
 	HashMap *new = malloc(sizeof(HashMap));
+	if(new == NULL){
+		printf("ERROR: malloc HashMap\n");
+		return NULL;
+	}
 	new->size = TABLE_SIZE;
 	new->current_mem = 0; 
 	new->table = malloc(sizeof(HashEntry) * TABLE_SIZE );
@@ -75,6 +80,7 @@ HashMap *hashmap_create() {
 
 //Fonction qui insère un élément dans la table de hachage map
 int hashmap_insert(HashMap *map, const char *key, void *value) {
+	if(map == NULL) return -1;
 	int i=0;
 	unsigned long k = h(key,i); //utilisation de la fonction de probing pour trouver une place
 	
@@ -82,7 +88,6 @@ int hashmap_insert(HashMap *map, const char *key, void *value) {
 		i++;
 		k = (h(key,i) % map->size);
 		if (i > map->size){ 
-			
 			return -1; // pas de place insertion raté
 		}
 	}
@@ -93,11 +98,10 @@ int hashmap_insert(HashMap *map, const char *key, void *value) {
 
 //Fonction permettant de récupérer un élément à partir de sa clé
 void *hashmap_get(HashMap *map, const char *key) {
+	if(map == NULL) return NULL;
+	
 	int i=0;
 	unsigned long k = h(key,i); //utilisation de la fonction de probing pour trouver la clé
-	if(map == NULL){
-		return NULL;
-	}
 	
 	while (map->table[k].key != TOMBSTONE && map->table[k].key != NULL) {
 		if(strcmp(map->table[k].key,key)==0) {
@@ -111,6 +115,8 @@ void *hashmap_get(HashMap *map, const char *key) {
 
 //Fonction qui supprime un élément dans la table de hachage map
 int hashmap_remove(HashMap *map, const char *key) {
+	if(map == NULL) return -1;
+	
 	int i = 0;
 	unsigned long k = h(key, i);
 

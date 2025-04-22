@@ -7,7 +7,7 @@ void menu() {
         printf("1. Initialiser du CPU \n");
         printf("2. PUSH une valeur sur la pile\n");
         printf("3. POP une valeur sur la pile\n");
-        printf("4. Lire assembler3.txt\n");
+        printf("4. Lire assembler_exo3.txt\n");
         printf("5. Afficher la pile \n");
 		printf("6. Quitter\n");
         printf("Votre choix : ");
@@ -91,9 +91,9 @@ int main() {
 				PUSH [Y]
 				POP DX
 				*/
-				ParserResult *p = parse("assembler3.txt");
+				ParserResult *p = parse("assembler_exo7.txt");
 				if (p == NULL) {
-					printf("Erreur: impossible de parser le fichier assembler2.txt\n");
+					printf("Erreur: impossible de parser le fichier assembler_exo7.txt\n");
 					break;
 				}  
 

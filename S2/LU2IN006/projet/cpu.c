@@ -7,9 +7,10 @@
 
 void print_cpu(CPU* cpu){
 	if(cpu == NULL) {
-		printf("CPU is NULL\n");
+		printf("CPU est NULL\n");
 		return;
 	}
+
 	print_memory(cpu->memory_handler);
 
 
@@ -36,87 +37,118 @@ void print_cpu(CPU* cpu){
 
 
 CPU *cpu_init(int memory_size) {
-    CPU *res = malloc(sizeof(CPU));
-    res->memory_handler = memory_init(memory_size);
-    res->context = hashmap_create();
-    res->constant_pool = hashmap_create();
+	CPU *res = malloc(sizeof(CPU));
+
+	if(res == NULL){
+		printf("ERROR: malloc CPU dans cpu_init\n");
+		return NULL;
+	}
+
+	res->memory_handler = memory_init(memory_size);
+	res->context = hashmap_create();
+	res->constant_pool = hashmap_create();
 
 	create_segment(res->memory_handler, "SS", 0, 128);
 
-    int *AX = malloc(sizeof(int));
-    int *BX = malloc(sizeof(int));
-    int *CX = malloc(sizeof(int));
-    int *DS = malloc(sizeof(int));
-    int *IP = malloc(sizeof(int));
-    int *ZF = malloc(sizeof(int));
-    int *SF = malloc(sizeof(int));
-    int *SP = malloc(sizeof(int));
-    int *BP = malloc(sizeof(int));
+	int *AX = malloc(sizeof(int));
+	if(AX == NULL){ printf("ERROR: malloc int dans cpu_init\n"); return NULL; }
+
+	int *BX = malloc(sizeof(int));
+	if(BX == NULL){ printf("ERROR: malloc int dans cpu_init\n"); return NULL; }
+
+	int *CX = malloc(sizeof(int));
+	if(CX == NULL){ printf("ERROR: malloc int dans cpu_init\n"); return NULL; }
+	
+	int *DS = malloc(sizeof(int));
+	if(DS == NULL){ printf("ERROR: malloc int dans cpu_init\n"); return NULL; }
+
+	int *IP = malloc(sizeof(int));
+	if(IP == NULL){ printf("ERROR: malloc int dans cpu_init\n"); return NULL; }
+
+	int *ZF = malloc(sizeof(int));
+	if(ZF == NULL){ printf("ERROR: malloc int dans cpu_init\n"); return NULL; }
+	
+	int *SF = malloc(sizeof(int));
+	if(SF == NULL){ printf("ERROR: malloc int dans cpu_init\n"); return NULL; }
+
+	int *SP = malloc(sizeof(int));
+	if(SP == NULL){ printf("ERROR: malloc int dans cpu_init\n"); return NULL; }
+
+	int *BP = malloc(sizeof(int));
+	if(BP == NULL){ printf("ERROR: malloc int dans cpu_init\n"); return NULL; }
+
 	int *ES = malloc(sizeof(int));
-    
+	if(ES == NULL){ printf("ERROR: malloc int dans cpu_init\n"); return NULL; }
+
 
 	*AX=0;
-    *BX=0;
-    *CX=0;
-    *DS=0;
-    *IP=0;
-    *ZF=0;
-    *SF=0;
+	*BX=0;
+	*CX=0;
+	*DS=0;
+	*IP=0;
+	*ZF=0;
+	*SF=0;
 	*ES=-1;
-    
 
 
-    Segment* ss = hashmap_get(res->memory_handler->allocated, "SS");
-    *SP=ss->size;
-    *BP=ss->size;
+
+	Segment* ss = hashmap_get(res->memory_handler->allocated, "SS");
+	if(ss == NULL){
+		printf("ERROR: hashmap_get est NULL dans cpu_init\n");
+		return NULL;
+	}
+
+	*SP=ss->size;
+	*BP=ss->size;
 
 
-    hashmap_insert(res->context, "AX", (void*) AX);
-    hashmap_insert(res->context, "BX", (void*) BX);
-    hashmap_insert(res->context, "CX", (void*) CX);
-    hashmap_insert(res->context, "DX", (void*) DS);
+	if(hashmap_insert(res->context, "AX", (void*) AX) == -1) { printf("Error: hashmap_insert dans cpu_init\n"); return NULL; }
+	if(hashmap_insert(res->context, "BX", (void*) BX) == -1) { printf("ERROR: hashmap_insert dans cpu_init\n"); return NULL; }
+	if(hashmap_insert(res->context, "CX", (void*) CX) == -1) { printf("ERROR: hashmap_insert dans cpu_init\n"); return NULL; }
+	if(hashmap_insert(res->context, "DX", (void*) DS) == -1) { printf("ERROR: hashmap_insert dans cpu_init\n"); return NULL; }
+	if(hashmap_insert(res->context, "IP", (void*) IP) == -1) { printf("ERROR: hashmap_insert dans cpu_init\n"); return NULL; }
+	if(hashmap_insert(res->context, "ZF", (void*) ZF) == -1) { printf("ERROR: hashmap_insert dans cpu_init\n"); return NULL; }
+	if(hashmap_insert(res->context, "SF", (void*) SF) == -1) { printf("ERROR: hashmap_insert dans cpu_init\n"); return NULL; }
+	if(hashmap_insert(res->context, "SP", (void*) SP) == -1) { printf("ERROR: hashmap_insert dans cpu_init\n"); return NULL; }
+	if(hashmap_insert(res->context, "BP", (void*) BP) == -1) { printf("ERROR: hashmap_insert dans cpu_init\n"); return NULL; }
+	if(hashmap_insert(res->context, "ES", (void*) ES) == -1) { printf("ERROR: hashmap_insert dans cpu_init\n"); return NULL; }
 
-    hashmap_insert(res->context, "IP", (void*) IP);
-    hashmap_insert(res->context, "ZF", (void*) ZF);
-    hashmap_insert(res->context, "SF", (void*) SF);
-
-    hashmap_insert(res->context, "SP", (void*) SP);
-    hashmap_insert(res->context, "BP", (void*) BP);
-
-	hashmap_insert(res->context, "ES", (void*) ES);
-
-    return res;
+	return res;
 }
 
 
 int matches ( const char * pattern , const char * string ) {
-    regex_t regex ;
-    int result = regcomp (&regex , pattern, REG_EXTENDED) ;
-    if (result) {
-        fprintf (stderr, "Regex compilation failed for patern : %s \n" , pattern ) ;
-        return 0;
-    }
-    result = regexec (&regex, string, 0, NULL, 0) ;
-    regfree (&regex) ;
-    return result == 0;
+	regex_t regex ;
+	int result = regcomp (&regex , pattern, REG_EXTENDED) ;
+	if (result) {
+		fprintf (stderr, "Regex compilation failed for patern : %s \n" , pattern ) ;
+		return 0;
+	}
+	result = regexec (&regex, string, 0, NULL, 0) ;
+	regfree (&regex) ;
+	return result == 0;
 }
 
 
 
 void cpu_destroy(CPU *cpu) {
-    free_HashMap(cpu->context);
-    free_HashMap(cpu->constant_pool);
-    free_memoryHandler(cpu->memory_handler);
-    free(cpu);
+	if(cpu != NULL) {
+		free_HashMap(cpu->context);
+		free_HashMap(cpu->constant_pool);
+		free_memoryHandler(cpu->memory_handler);
+		free(cpu);
+	}
+	
 }
 
 
 void* store(MemoryHandler *handler, const char *segment_name, int pos, void *data) {
+	if(handler == NULL) return NULL;
+
 	Segment* seg=hashmap_get(handler->allocated, segment_name);
 
-	if(seg == NULL) {
-		return NULL;
-	}
+	if(seg == NULL) return NULL; 
+
 	int addr = seg->start + pos;
 
 	void *old_data = handler->memory[addr];
@@ -126,20 +158,27 @@ void* store(MemoryHandler *handler, const char *segment_name, int pos, void *dat
 
 	if(pos < seg->size){
 		handler->memory[seg->start + pos] = data;
+		return data; //juste pour ne pas renvoyer NULL
 	}
 
 	return NULL;
 }
 
 void* load(MemoryHandler *handler, const char *segment_name, int pos) {
-    Segment* seg=hashmap_get(handler->allocated, segment_name);
-    if (seg != NULL) {
-        return handler->memory[seg->start + pos];
-    }
-    return NULL;
+	if(handler == NULL) return NULL;
+
+	Segment* seg=hashmap_get(handler->allocated, segment_name);
+	if (seg != NULL) {
+		return handler->memory[seg->start + pos];
+	}
+	return NULL;
 }
 
+
 void allocate_variables(CPU *cpu, Instruction** data_instructions, int data_count) {
+	if(cpu == NULL) { printf("ERROR: cpu est NULL dans allocate_variables"); return; }
+	if(data_instructions == NULL) { printf("ERROR: data_instructions est NULL dans allocate_variables"); return; }
+	
 	int size_new_seg = 0;
 
 	for(int i=0; i<data_count; i++) {
@@ -166,7 +205,11 @@ void allocate_variables(CPU *cpu, Instruction** data_instructions, int data_coun
 	int mem_adr=0;
 
 	Segment* ds=hashmap_get(cpu->memory_handler->allocated, "DS");
-
+	
+	if(ds == NULL) {
+		printf("ERROR: ds est NULL dans allocate_variables");
+		return ;
+	}
 
 	for(int i=0; i<data_count; i++) {
 		
@@ -176,6 +219,12 @@ void allocate_variables(CPU *cpu, Instruction** data_instructions, int data_coun
 			char *token = strtok(data, ",");
 			while (token != NULL) {
 				int *val = malloc(sizeof(int));
+				
+				if(val == NULL){
+					printf("ERROR: malloc int dans allocate_variables\n");
+					return NULL;
+				}
+
 				sscanf(token, "%d", val); //convert char* to int
 				store(cpu->memory_handler, "DS", mem_adr++, val);
 				token = strtok(NULL, ",");
@@ -184,6 +233,12 @@ void allocate_variables(CPU *cpu, Instruction** data_instructions, int data_coun
 		} else {
 		
 			int *val = malloc(sizeof(int));
+
+			if(val == NULL){
+				printf("ERROR: malloc int dans allocate_variables\n");
+				return NULL;
+			}
+
 			sscanf(data, "%d", val); //convert char* to int
 			store(cpu->memory_handler, "DS", mem_adr++, val);
 		}
@@ -193,18 +248,22 @@ void allocate_variables(CPU *cpu, Instruction** data_instructions, int data_coun
 
 
 void print_segment_data(CPU *cpu, const char *segment_name) {
+	if(cpu == NULL) return;
+
 	Segment* seg = hashmap_get(cpu->memory_handler->allocated, segment_name);
+
 	if (seg == NULL) {
-		printf("Segment %s not found\n", segment_name);
+		printf("ERROR: Segment %s \n", segment_name);
 		return;
 	}
+
 	printf("\n%s Segment\n\n", segment_name);
 	for (int i = 0; i < seg->size; i++) {
 		int* val = load(cpu->memory_handler, segment_name, i);
 		if (val != NULL) {
 			printf("%d: %d\n", i, *val);
 		} else {
-			printf("%d: (nil)\n", i);
+			printf("%d: (NULL)\n", i);
 		}
 	}
 }
@@ -216,9 +275,15 @@ void print_data_segment(CPU *cpu) {
 
 void *immediate_addressing(CPU *cpu, const char *operand){
 
-	if (matches("^[0-9]+$", operand)) {
+	if (matches("^[0-9]+$", operand) && (cpu != NULL)) {
 		if(hashmap_get(cpu->constant_pool, operand) == NULL) {
 			int *val = malloc(sizeof(int));
+
+			if(val == NULL){
+				printf("ERROR: malloc int dans immediate_addressing\n");
+				return NULL;
+			}
+
 			*val=atoi(operand);
 			hashmap_insert(cpu->constant_pool, operand, val);
 			return (void *) val;
@@ -232,14 +297,15 @@ void *immediate_addressing(CPU *cpu, const char *operand){
 
 void *register_addressing(CPU *cpu, const char *operand) {
 
-	if (matches("^(AX|BX|CX|DX)$",operand)) {
+	if (matches("^(AX|BX|CX|DX)$",operand) && (cpu != NULL)) {
 		return hashmap_get(cpu->context, operand);
 	}
 	return NULL;
 }
 
 void *memory_direct_addressing(CPU *cpu, const char *operand) {
-	if (matches("^\\[([0-9]+)\\]$", operand)) {
+
+	if (matches("^\\[([0-9]+)\\]$", operand) && (cpu != NULL)) {
 		int address = atoi(operand + 1);
 		Segment* ds=hashmap_get(cpu->memory_handler->allocated, "DS");
 
@@ -254,16 +320,15 @@ void *memory_direct_addressing(CPU *cpu, const char *operand) {
 }
 
 void *register_indirect_addressing(CPU *cpu, const char *operand) {
-	if(matches("^\\[(AX|BX|CX|DX)\\]$", operand)){
+
+	if(matches("^\\[(AX|BX|CX|DX)\\]$", operand) && (cpu != NULL)){
 		char reg_name[3];
 		reg_name[0] = operand[1];
 		reg_name[1] = operand[2];
 		reg_name[2] = '\0';
 
 		int* val = (int*) hashmap_get(cpu->context, reg_name);
-		if(val == NULL) {
-			return NULL;
-		}
+		if(val == NULL) return NULL;
 
 		int addr = *val;
 		return load(cpu->memory_handler, "DS", addr);
@@ -273,6 +338,7 @@ void *register_indirect_addressing(CPU *cpu, const char *operand) {
 }
 
 void *resolve_addressing(CPU *cpu, const char *operand) {
+	if(cpu == NULL) return NULL;
 
 	void* t = immediate_addressing(cpu, operand);
 	if(t != NULL) { return t; }
@@ -293,9 +359,7 @@ void *resolve_addressing(CPU *cpu, const char *operand) {
 }
 
 void handle_MOV(CPU* cpu, void* src, void* dest){
-	if(src == NULL || dest == NULL){
-		return;
-	}
+	if(src == NULL || dest == NULL) return;
 	
 	*((int*)dest) = *((int*)src);
 }
@@ -303,14 +367,14 @@ void handle_MOV(CPU* cpu, void* src, void* dest){
 
 
 char *trim(char *str) {
-    while (*str == ' ' || *str == '\t' || *str == '\n' || *str == '\r') str++;
+	while (*str == ' ' || *str == '\t' || *str == '\n' || *str == '\r') str++;
 
-    char *end = str + strlen(str) - 1;
-    while (end > str && (*end == ' ' || *end == '\t' || *end == '\n' || *end == '\r')) {
-        *end = '\0';
-        end--;
-    }
-    return str;
+	char *end = str + strlen(str) - 1;
+	while (end > str && (*end == ' ' || *end == '\t' || *end == '\n' || *end == '\r')) {
+		*end = '\0';
+		end--;
+	}
+	return str;
 }
 
 int search_and_replace(char **str, HashMap *values) {
@@ -377,50 +441,55 @@ int search_and_replace(char **str, HashMap *values) {
 
 
 
-// 1) Remplace les labels (ex: "loop" → "1")
+//Remplace les labels (ex: "loop" → "1")
 void replace_label(Instruction *instr, HashMap *labels) {
-    // operand1
-    if (instr->operand1) {
-        int *p = hashmap_get(labels, instr->operand1);
-        if (p) {
-            char buf[32];
-            snprintf(buf, sizeof(buf), "%d", *p);
-            free(instr->operand1);
-            instr->operand1 = strdup(buf);
-        }
-    }
-    // operand2
-    if (instr->operand2) {
-        int *p = hashmap_get(labels, instr->operand2);
-        if (p) {
-            char buf[32];
-            snprintf(buf, sizeof(buf), "%d", *p);
-            free(instr->operand2);
-            instr->operand2 = strdup(buf);
-        }
-    }
+	if ((instr == NULL) || (labels == NULL)) return;
+
+	// operand1
+	if (instr->operand1) {
+		int *p = hashmap_get(labels, instr->operand1);
+		if (p) {
+			char buf[32];
+			snprintf(buf, sizeof(buf), "%d", *p); //écrit la valeur entière pointée par p dans le buffer 'buf' sous forme de chaîne
+			free(instr->operand1);
+			instr->operand1 = strdup(buf);
+		}
+	}
+
+	// operand2
+	if (instr->operand2) {
+		int *p = hashmap_get(labels, instr->operand2);
+		if (p) {
+			char buf[32];
+			snprintf(buf, sizeof(buf), "%d", *p); //écrit la valeur entière pointée par p dans le buffer 'buf' sous forme de chaîne
+			free(instr->operand2);
+			instr->operand2 = strdup(buf);
+		}
+	}
 }
 
-// 2) Remplace les variables mémoire entre crochets (ex: "[X]" → "[0]")
+//Remplace les variables mémoire entre crochets (ex: "[X]" → "[0]")
 void replace_memvar(Instruction *instr, HashMap *memloc) {
-    for (int k = 0; k < 2; k++) {
-        char **op = (k == 0 ? &instr->operand1 : &instr->operand2);
+	if ((instr == NULL) || (memloc == NULL)) return;
+
+	for (int k = 0; k < 2; k++) {
+		char **op = (k == 0 ? &instr->operand1 : &instr->operand2);
 		if (!*op || strlen(*op) < 3) continue; // Add length check
-        size_t len = strlen(*op);
-        if (len >= 3 && (*op)[0] == '[' && (*op)[len-1] == ']') {
-            // on extrait le nom sans les crochets
-            char name[64] = {0}; 
-            memcpy(name, *op + 1, len - 2);
-            name[len-2] = '\0';
-            int *p = hashmap_get(memloc, name);
-            if (p) {
-                char buf[32];
-                snprintf(buf, sizeof(buf), "[%d]", *p);
-                free(*op);
-                *op = strdup(buf);
-            }
-        }
-    }
+		size_t len = strlen(*op);
+		if (len >= 3 && (*op)[0] == '[' && (*op)[len-1] == ']') {
+			// on extrait le nom sans les crochets
+			char name[64] = {0}; 
+			memcpy(name, *op + 1, len - 2);
+			name[len-2] = '\0';
+			int *p = hashmap_get(memloc, name);
+			if (p) {
+				char buf[32];
+				snprintf(buf, sizeof(buf), "[%d]", *p);
+				free(*op);
+				*op = strdup(buf);
+			}
+		}
+	}
 }
 
 int resolve_constants(ParserResult *result) {

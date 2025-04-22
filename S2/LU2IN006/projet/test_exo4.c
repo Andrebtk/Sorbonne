@@ -9,7 +9,7 @@ void menu() {
         printf("2. Liberer le CPU \n");
         printf("3. Stocker un valeur dans un segemnt\n");
         printf("4. Load une donnee stockee a un position donner d'un segment\n");
-        printf("5. Allouer dynamiquement le segment de donnees en fonction du fichier assembler.txt \n");
+        printf("5. Allouer dynamiquement le segment de donnees en fonction du fichier assembler_exo3-4.txt \n");
         printf("6. Afficher le contenu du segment de donnees\n");
         printf("7. Afficher le segment TEST\n");
 		printf("8. Quitter\n");
@@ -123,7 +123,7 @@ int main() {
 					break;
 				}
 
-				ParserResult *res = parse("assembler.txt");
+				ParserResult *res = parse("assembler_exo3-4.txt");
 				/*
 				.DATA
 				x DW 42
@@ -136,7 +136,7 @@ int main() {
 				*/
 				
 				if (res == NULL) {
-					printf("Erreur: impossible de parser le fichier assembler.txt\n");
+					printf("Erreur: impossible de parser le fichier assembler_exo3-4.txt\n");
 					break;
 				}
 

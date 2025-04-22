@@ -36,7 +36,7 @@ int main() {
 			}
 			case 2: {
 				// Option 2 : Analyse d'un fichier assembleur
-				ParserResult *p = parse("assembler.txt");
+				ParserResult *p = parse("assembler_exo3-4.txt");
 				printf("\n=== Résultat de l'analyse ===\n");
 				afficher_ParserResult(p);
 				free_ParserResult(p);

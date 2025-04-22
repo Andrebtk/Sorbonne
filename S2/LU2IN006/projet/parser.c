@@ -40,6 +40,7 @@ void free_ParserResult(ParserResult *pr) {
 }
 //Fonction pour affiche une instruction
 void affiche_Instruction(Instruction* a) {
+	if (a==NULL) { printf("Affichage NULL"); return; }
 	printf("mnemonic: %s\n",a->mnemonic);
 	printf("operand1: %s\n",a->operand1);
 	printf("operand2: %s\n",a->operand2);
@@ -48,6 +49,7 @@ void affiche_Instruction(Instruction* a) {
 //Fonction pour afficher une structure de type ParserResult
 void afficher_ParserResult(ParserResult* p) {
 	if (p==NULL) { printf("Affichage NULL"); return; }
+
 	printf("data_count: %d \n",p->data_count);
 
 	for (int i=0; i<p->data_count; i++) {
@@ -70,6 +72,8 @@ void afficher_ParserResult(ParserResult* p) {
 
 //Fonction qui analyse et stock une ligne de la section .DATA
 Instruction *parse_data_instuction(const char *line, HashMap *memory_locations){
+	if(memory_locations == NULL) return NULL;
+
 	char nom[Length];
 	char type[Length];
 	char valeur[Length];
@@ -78,6 +82,12 @@ Instruction *parse_data_instuction(const char *line, HashMap *memory_locations){
 	//creation de l'instruction
 	sscanf(line, "%s %s %s",nom, type, valeur);
 	Instruction *res = malloc(sizeof(Instruction));
+	
+	if(res == NULL){
+		printf("ERROR: malloc Instruction dans parse_data_instuction\n");
+		return NULL;
+	}
+
 	res->mnemonic = strdup(nom);
 	res->operand1 = strdup(type);
 	res->operand2 = strdup(valeur);
@@ -85,13 +95,19 @@ Instruction *parse_data_instuction(const char *line, HashMap *memory_locations){
 	char *val_copy = strdup(valeur);
 	char *token = strtok(val_copy, ",");
 	while (token != NULL) {
-        size++;
-        token = strtok(NULL, ",");
-    }
+		size++;
+		token = strtok(NULL, ",");
+	}
 
 	free(val_copy);
 
 	int *i = malloc(sizeof(int));
+	
+	if(i == NULL){
+		printf("ERROR: malloc int dans parse_data_instuction\n");
+		return NULL;
+	}
+
 	*i=memory_locations->current_mem;
 	hashmap_insert(memory_locations, nom, (void*) i);
 	memory_locations->current_mem+= size;
@@ -101,11 +117,18 @@ Instruction *parse_data_instuction(const char *line, HashMap *memory_locations){
 
 //Fonction qui analyse et stock une ligne de la section .CODE
 Instruction *parse_code_instruction(const char *line, HashMap *labels, int code_count){
+	if(labels == NULL) return NULL;
+
 	char etiquette[Length] = {0};
 	char nom[Length] = {0};
 	char op1[Length] = {0};
 	char op2[Length] = {0};
 	Instruction *res = malloc(sizeof(Instruction));
+
+	if(res == NULL){
+		printf("ERROR: malloc Instruction dans parse_code_instruction\n");
+		return NULL;
+	}
 
 	int is_etiquette=0;
 	
@@ -138,8 +161,7 @@ Instruction *parse_code_instruction(const char *line, HashMap *labels, int code_
 			etiquette[0] = '\0';
 		}
 
-	} else { // it's -> [ES:AX] example
-		
+	} else { //[ES:AX] example
 		if(strchr(line,',')){
 			sscanf(line, "%s %[^,],%s", nom, op1, op2);
 		} else {
@@ -149,12 +171,18 @@ Instruction *parse_code_instruction(const char *line, HashMap *labels, int code_
 			}
 			op2[0] = '\0';
 		}
-		
 		etiquette[0]='\0';
 	}
+
 	//Ajout du label dans la table de hachage
 	if (is_etiquette==1) {
 		int *i = malloc(sizeof(int));
+
+		if(i == NULL){
+			printf("ERROR: malloc int dans parse_code_instruction\n");
+			return NULL;
+		}
+
 		*i = code_count;
 		hashmap_insert(labels, etiquette, i);
 	}
@@ -172,7 +200,18 @@ Instruction *parse_code_instruction(const char *line, HashMap *labels, int code_
 ParserResult *parse(const char *filename) {
 	FILE *f = fopen(filename,"r");
 	
+	if(f == NULL){
+		printf("Error: fopen dans parse\n");
+		return NULL;
+	}
+
 	ParserResult *res = malloc(sizeof(ParserResult));
+	
+	if(res == NULL){
+		printf("ERROR: malloc ParserResult dans parse\n");
+		return NULL;
+	}
+
 	char buffer[555];
 	int Data = 1;
 	
@@ -180,7 +219,19 @@ ParserResult *parse(const char *filename) {
 	res->code_count = 0;
 	res->data_count = 0;
 	res->data_instructions = malloc(100*sizeof(Instruction*));
+	
+	if(res->data_instructions == NULL){
+		printf("ERROR: malloc Instruction* dans parse\n");
+		return NULL;
+	}
+
 	res->code_instructions = malloc(100*sizeof(Instruction*));
+	
+	if(res->code_instructions == NULL){
+		printf("ERROR: malloc Instruction* dans parse\n");
+		return NULL;
+	}
+
 	res->labels = hashmap_create();;
 	res->memory_locations = hashmap_create();
 

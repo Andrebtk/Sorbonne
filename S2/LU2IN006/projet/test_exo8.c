@@ -9,7 +9,7 @@ void menu() {
 	printf("4. Tester resolve_addressing\n");
 	printf("5. Tester find_free_address_strategy\n");
 	printf("6. Liberer le segment ES\n");
-	printf("7. Tester handle_instruction avec ALLOC et FREE (assembler4.txt) \n");
+	printf("7. Tester handle_instruction avec ALLOC et FREE (assembler_exo8.txt) \n");
 	printf("8. Afficher segment ES \n");
 	printf("9. Quitter\n");
 	printf("Votre choix : ");
@@ -182,7 +182,7 @@ int main() {
 					break;
 				}
 
-				const char *filename = "assembler4.txt";
+				const char *filename = "assembler_exo8.txt";
 				ParserResult *p = parse(filename);
 
 				resolve_constants(p); 
