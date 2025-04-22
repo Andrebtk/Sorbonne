@@ -111,15 +111,15 @@ int main() {
 				int *p = malloc(sizeof(int)); 
 				*p = 12;
 				store(cpu->memory_handler, "ES", 5, p);
-				printf("Stocké 42 en ES[5]\n");
+				printf("Stocké 42 en position 5 dans ES\n");
 				
 			
 				// 4) Lecture de vérification
 				int *val = resolve_addressing(cpu, "[ES:BX]");
 				if (!val) {
-					printf("Erreur: lecture ES:[BX] impossible\n");
+					printf("Erreur: lecture [ES:BX] impossible\n");
 				} else {
-					printf("Lecture mémoire ES:[BX] => %d\n", *val);
+					printf("Lecture mémoire [ES:BX] => %d\n", *val);
 				}
 
 				break;

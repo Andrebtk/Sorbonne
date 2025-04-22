@@ -72,6 +72,12 @@ int main() {
 				printf("Entrer la valeur (int) que vous voulez stocker dans le segment \"TEST\" et la postion dans le segment (entre 0 et 50) (separer par un espace)\n");
 				int value, position;
 				scanf("%d %d", &value, &position);
+				
+				if(position<0 || position>50) {
+					printf("position non conforme\n");
+					break;
+				}
+
 				Segment *test_segment = hashmap_get(cpu->memory_handler->allocated, "TEST");
 				if (test_segment == NULL) {
 					printf("Erreur: le segment TEST n'existe pas\n");
@@ -118,6 +124,17 @@ int main() {
 				}
 
 				ParserResult *res = parse("assembler.txt");
+				/*
+				.DATA
+				x DW 42
+				arr DB 20,21,22,23
+				y DB 10
+				.CODE
+				start: MOV AX,x
+				loop: ADD AX,y
+				JMP loop
+				*/
+				
 				if (res == NULL) {
 					printf("Erreur: impossible de parser le fichier assembler.txt\n");
 					break;
@@ -135,7 +152,6 @@ int main() {
 					printf("Erreur: le CPU n'est pas initialisé\n");
 					break;
 				}
-				print_data_segment(cpu);
 				print_cpu(cpu);
 				break;
 			}

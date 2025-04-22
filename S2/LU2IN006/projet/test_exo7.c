@@ -80,6 +80,17 @@ int main() {
 					break;
 				}
 
+				/*
+				5.DATA
+				X DW 10
+				Y DB 25
+				Z DB 1
+				.CODE
+				MOV BX,[X]
+				PUSH BX
+				PUSH [Y]
+				POP DX
+				*/
 				ParserResult *p = parse("assembler3.txt");
 				if (p == NULL) {
 					printf("Erreur: impossible de parser le fichier assembler2.txt\n");
