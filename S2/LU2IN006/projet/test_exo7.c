@@ -48,8 +48,12 @@ int main() {
 				int value;
 				scanf("%d", &value);
 
-				push_value(cpu, value);
-				printf("la fonction push_value a ete executer avec succès avec %d \n", value);
+				if(push_value(cpu, value)==0){
+					printf("la fonction push_value a ete executer avec succès avec %d \n", value);
+				} else {
+					printf("La pile est remplie \n");
+				}
+				
 				break;
 			}
 
@@ -60,8 +64,12 @@ int main() {
 				}
 
 				int addr;
-				pop_value(cpu, &addr);
-				printf("la fonction pop_value a ete executer avec succès et a retourner %d \n", addr);
+				if (pop_value(cpu, &addr)== 0){
+					printf("la fonction pop_value a ete executer avec succès et a retourner %d \n", addr);
+				}else {
+					printf("Pile vide \n");
+				}
+				
 				
 				break;
 			}

@@ -6,7 +6,7 @@ int main() {
 	
 	do {
 		printf("\n=== Menu Principal ===\n");
-		printf("1. Tester le parsing de données et la table de hachage\n");
+		printf("1. Tester le parsing de données\n");
 		printf("2. Analyser un fichier assembleur\n");
 		printf("3. Quitter\n");
 		printf("Votre choix : ");

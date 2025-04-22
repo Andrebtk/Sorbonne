@@ -656,7 +656,7 @@ int push_value(CPU *cpu, int value) {
 	(*sp)--;
 
 
-    if (*sp < ss->start) return -1;
+    if (*sp <= ss->start) return -1;
 
 	int *cell = malloc(sizeof(int));
     *cell = value;
@@ -669,7 +669,7 @@ int pop_value(CPU *cpu, int *dest) {
 	Segment *ss = hashmap_get(cpu->memory_handler->allocated, "SS");
 	int *sp = hashmap_get(cpu->context, "SP");
 
-	if (*sp >= ss->start + ss->size - 1) return -1;
+	if (*sp >= ss->start + ss->size) return -1;
 
 	int *cell = cpu->memory_handler->memory[*sp];
 	if (!cell) return -1;
