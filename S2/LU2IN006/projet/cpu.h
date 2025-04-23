@@ -7,9 +7,9 @@
 #include <stdlib.h>
 
 typedef struct cpu{
-    MemoryHandler* memory_handler;  // Gestionnaire de memoire
-    HashMap* context;               // Registres (AX, BX, CX, DX)
-    HashMap *constant_pool;         // Table de hachage pour stocker les valeurs immdiates
+	MemoryHandler* memory_handler;  // Gestionnaire de memoire
+	HashMap* context;               // Registres (AX, BX, CX, DX)
+	HashMap *constant_pool;         // Table de hachage pour stocker les valeurs immdiates
 } CPU;
 
 CPU *cpu_init(int memory_size);

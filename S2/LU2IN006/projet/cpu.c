@@ -222,7 +222,7 @@ void allocate_variables(CPU *cpu, Instruction** data_instructions, int data_coun
 				
 				if(val == NULL){
 					printf("ERROR: malloc int dans allocate_variables\n");
-					return NULL;
+					return;
 				}
 
 				sscanf(token, "%d", val); //convert char* to int
@@ -236,7 +236,7 @@ void allocate_variables(CPU *cpu, Instruction** data_instructions, int data_coun
 
 			if(val == NULL){
 				printf("ERROR: malloc int dans allocate_variables\n");
-				return NULL;
+				return;
 			}
 
 			sscanf(data, "%d", val); //convert char* to int

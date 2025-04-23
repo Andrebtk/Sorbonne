@@ -1,7 +1,7 @@
 #include "cpu.h"
 #include <stdio.h>
 
-
+//
 CPU* setup_test_environment() {
 	CPU* cpu = cpu_init(1024);
 	if(!cpu)  {

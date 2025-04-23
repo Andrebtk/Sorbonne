@@ -2,7 +2,14 @@
 X DW 42
 arr DB 20,21,22,23
 Y DB 10
+threshold DB 4
 .CODE
 start: MOV AX,[X]
-loop: ADD AX,[Y]
+MOV BX,[Y]
+MOV CX,0
+loop: CMP CX,[threshold]
+JZ done
+ADD AX,BX
+ADD CX,1
 JMP loop
+done: HALT
