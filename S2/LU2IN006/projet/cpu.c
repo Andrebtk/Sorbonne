@@ -4,7 +4,7 @@
 #include <regex.h>
 
 
-
+//Fonction d'affichage d'une structure de type CPU
 void print_cpu(CPU* cpu){
 	if(cpu == NULL) {
 		printf("CPU est NULL\n");
@@ -35,7 +35,7 @@ void print_cpu(CPU* cpu){
 	
 }
 
-
+//Fonction qui alloue et initialise une structure de type CPU
 CPU *cpu_init(int memory_size) {
 	CPU *res = malloc(sizeof(CPU));
 
@@ -48,6 +48,7 @@ CPU *cpu_init(int memory_size) {
 	res->context = hashmap_create();
 	res->constant_pool = hashmap_create();
 
+	//Creation du segment 'ss'
 	create_segment(res->memory_handler, "SS", 0, 128);
 
 	int *AX = malloc(sizeof(int));
@@ -130,7 +131,7 @@ int matches ( const char * pattern , const char * string ) {
 }
 
 
-
+//Fonction qui libère la mémoire d'une structure de type cpu
 void cpu_destroy(CPU *cpu) {
 	if(cpu != NULL) {
 		free_HashMap(cpu->context);
@@ -141,12 +142,12 @@ void cpu_destroy(CPU *cpu) {
 	
 }
 
-
+//Fonction qui stock une data a la position pos de segment_name
 void* store(MemoryHandler *handler, const char *segment_name, int pos, void *data) {
 	if(handler == NULL) return NULL;
-
+	
 	Segment* seg=hashmap_get(handler->allocated, segment_name);
-
+	//Verification que segment_name existe
 	if(seg == NULL) return NULL; 
 
 	int addr = seg->start + pos;
@@ -163,7 +164,7 @@ void* store(MemoryHandler *handler, const char *segment_name, int pos, void *dat
 
 	return NULL;
 }
-
+//Fonction qui récupere la donnée stocker a la position pos
 void* load(MemoryHandler *handler, const char *segment_name, int pos) {
 	if(handler == NULL) return NULL;
 
@@ -174,7 +175,7 @@ void* load(MemoryHandler *handler, const char *segment_name, int pos) {
 	return NULL;
 }
 
-
+//Fonction qui alloue un segment de données en fonction de data_instructions
 void allocate_variables(CPU *cpu, Instruction** data_instructions, int data_count) {
 	if(cpu == NULL) { printf("ERROR: cpu est NULL dans allocate_variables"); return; }
 	if(data_instructions == NULL) { printf("ERROR: data_instructions est NULL dans allocate_variables"); return; }
@@ -246,7 +247,7 @@ void allocate_variables(CPU *cpu, Instruction** data_instructions, int data_coun
 	}
 }
 
-
+//Fonction pour afficher le contenu du segment de données 'DS'
 void print_segment_data(CPU *cpu, const char *segment_name) {
 	if(cpu == NULL) return;
 
@@ -272,7 +273,7 @@ void print_data_segment(CPU *cpu) {
 	print_segment_data(cpu, "DS");
 }
 
-
+//Fonction pour vérifie si l'opérand correspond a un adressage imédiat
 void *immediate_addressing(CPU *cpu, const char *operand){
 
 	if (matches("^[0-9]+$", operand) && (cpu != NULL)) {
@@ -295,6 +296,7 @@ void *immediate_addressing(CPU *cpu, const char *operand){
 	return NULL;
 }
 
+//Fonction pour vérifie si l'opérand correspond a un adressage par registre
 void *register_addressing(CPU *cpu, const char *operand) {
 
 	if (matches("^(AX|BX|CX|DX)$",operand) && (cpu != NULL)) {
@@ -303,6 +305,7 @@ void *register_addressing(CPU *cpu, const char *operand) {
 	return NULL;
 }
 
+//Fonction pour vérifie si l'opérand correspond a un adressage direct
 void *memory_direct_addressing(CPU *cpu, const char *operand) {
 
 	if (matches("^\\[([0-9]+)\\]$", operand) && (cpu != NULL)) {
@@ -319,6 +322,7 @@ void *memory_direct_addressing(CPU *cpu, const char *operand) {
 	return NULL;
 }
 
+//Fonction pour vérifie si l'opérand correspond a un adressage indirect par registre
 void *register_indirect_addressing(CPU *cpu, const char *operand) {
 
 	if(matches("^\\[(AX|BX|CX|DX)\\]$", operand) && (cpu != NULL)){
@@ -337,6 +341,7 @@ void *register_indirect_addressing(CPU *cpu, const char *operand) {
 	return NULL;
 }
 
+//Fonction pour trouver le type d'adressage
 void *resolve_addressing(CPU *cpu, const char *operand) {
 	if(cpu == NULL) return NULL;
 
@@ -358,6 +363,7 @@ void *resolve_addressing(CPU *cpu, const char *operand) {
 	return NULL;
 }
 
+//fonction qui simule l'instruction MOV
 void handle_MOV(CPU* cpu, void* src, void* dest){
 	if(src == NULL || dest == NULL) return;
 	
@@ -514,7 +520,7 @@ int resolve_constants(ParserResult *result) {
 	return 0;
 }
 
-
+//Fonction qui alloue et initialise le segment de code 'CS' et le registre IP
 void allocate_code_segment(CPU *cpu, Instruction **code_instructions, int code_count) {
 	if(cpu == NULL || code_instructions == NULL) return;
 
@@ -540,6 +546,7 @@ void allocate_code_segment(CPU *cpu, Instruction **code_instructions, int code_c
 		*ip = 0;
 }
 
+//Fonction qui identifie l'instruction et l'execute
 int handle_instruction(CPU *cpu, Instruction *instr, void *dst, void *src) {
 	if(cpu == NULL || instr == NULL) return -1;
 
@@ -600,7 +607,7 @@ int handle_instruction(CPU *cpu, Instruction *instr, void *dst, void *src) {
 	return 0;
 }
 
-
+//Fonction qui execute l'instruction
 int execute_instruction(CPU *cpu, Instruction *instr) {
 	if (instr == NULL) { printf("[ERROR]Instruciton is NULL\n"); return -1; }
 	if (cpu == NULL) { printf("[ERROR]CPU is NULL\n"); return -1; }
@@ -672,6 +679,7 @@ Instruction* fetch_next_instruction(CPU *cpu) {
 	return NULL;
 }
 
+//Fonction qui affiche l'etat du cpu final apres tests de toute les autres fonctions
 int run_program(CPU *cpu) {
 	if(cpu == NULL) return -1;
 
@@ -727,7 +735,7 @@ int run_program(CPU *cpu) {
 	return 0;
 }
 
-
+//Fonction pour récuperer le segment 'ss'
 int push_value(CPU *cpu, int value) {
 	Segment *ss = hashmap_get(cpu->memory_handler->allocated, "SS");
 	int *sp = hashmap_get(cpu->context, "SP");
@@ -755,6 +763,7 @@ int push_value(CPU *cpu, int value) {
 	return 0;
 }
 
+//Fonction pour lire la valeur pointée par memory[SP], la copie et libere la memoire
 int pop_value(CPU *cpu, int *dest) {
 	Segment *ss = hashmap_get(cpu->memory_handler->allocated, "SS");
 	int *sp = hashmap_get(cpu->context, "SP");
@@ -781,7 +790,7 @@ int pop_value(CPU *cpu, int *dest) {
 }
 
 
-
+//Fonction qui vérifie si l'operande correspond a ce type d'adressage
 void* segment_override_addressing(CPU* cpu, const char* operand){
 	if (cpu == NULL) return NULL;
 
@@ -811,6 +820,7 @@ void* segment_override_addressing(CPU* cpu, const char* operand){
 	return load(cpu->memory_handler, seg, *reg_value);
 }
 
+//Fonction qui trouve un segment libre selon la strategie utilisé
 int find_free_address_strategy(MemoryHandler *handler, int size, int strategy){
 	if(handler == NULL) return -1;
 
@@ -836,6 +846,7 @@ int find_free_address_strategy(MemoryHandler *handler, int size, int strategy){
 	return (selected)? selected->start: -1;
 }
 
+//Fonction qui alloue le segment 'ES'
 int alloc_es_segment(CPU *cpu){
 	if(cpu == NULL) return -1;
 
@@ -881,6 +892,7 @@ int alloc_es_segment(CPU *cpu){
 	return 0;
 }
 
+//Fonction pour liberer la memoire du segment 'ES'
 int free_es_segment(CPU *cpu) {
 	if(cpu == NULL) return -1;
 
