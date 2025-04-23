@@ -868,7 +868,7 @@ int alloc_es_segment(CPU *cpu){
 		int* v = malloc(sizeof(int));
 		if(v == NULL){
 			printf("ERROR: malloc int est NULL dans alloc_es_segment\n");
-			return -1
+			return -1;
 		}
 
 		*v = 0;
