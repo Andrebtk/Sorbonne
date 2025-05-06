@@ -1,6 +1,6 @@
 (select nomAth, prenomAth 
 from rangEpreuve
-where rang >=3)
+where rang <=3)
 
 INTERSECT 
 
