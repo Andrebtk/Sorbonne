@@ -1,0 +1,26 @@
+ul {
+    border-style: solid;
+    /* bordure du haut seulement, le reste viendra des LI */
+    border-width: 0.1em 0 0 0;
+    /* elargir le cadre */ 
+    line-height: 2em;
+    /* pas de point pour les items */
+    list-style-type: none;
+    padding: 0;
+    width: 10em;
+}
+
+ul li {
+    border-style: solid;
+    /* pas de bordure haute, la balise precedente s'en charge */
+    border-width: 0 0.1em 0.1em 0.1em;
+}
+ul ul {
+    position: absolute;
+    /* revenir en haut du cadre du parent, bordure comprise */
+    margin-top: -2.1em; 
+    /* sauter le cadre du parent moins ses bordures:
+    /* si on laisse un trou entre les 2, le :hover ne sera plus actif
+    /* et le menu lateral s'effacera avant d'etre atteint */
+    margin-left: 9.8em;
+}

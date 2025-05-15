@@ -1,0 +1,10 @@
+<script>
+     function saisieIncorrecte(input, re)
+    {
+        var t = re ? re.test(input.value) : true;
+        /// pour mettre en rouge pointille les fautifs:
+        input.style.border = t ? "1px solid" : '2px dashed red';
+        return t ? false : input;
+    }
+ 
+</script>

@@ -1,0 +1,644 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID: DidacSPIP Emmanuel.Saint-James@upmc.fr
+CALSCALE:GREGORIAN
+X-WR-CALNAME;VALUE=TEXT:ACS_9692
+X-WR-RELCALID:/lmd/licence/2023/ue/LU2IN022-2024fev/spip.php?action=organiser&id_rubrique=3&groupe=6&cours=1
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240118T160000
+DTEND;TZID=Europe/Paris:20240118T174500
+LAST-MODIFIED:20240118T060715
+UID:ACS-Cours-1-0@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS Cours 1 
+DESCRIPTION:ACS (Séance 1) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:56 B
+SEQUENCE:1
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240122T140000
+DTEND;TZID=Europe/Paris:20240122T154500
+LAST-MODIFIED:20240129T010232
+UID:ACS-Travaux Dirigés-1-5@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS TD G5 1 
+DESCRIPTION:ACS (Séance 1) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:46-56 102
+SEQUENCE:2
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240122T160000
+DTEND;TZID=Europe/Paris:20240122T174500
+CREATED:20240119T002308
+UID:ACS-Travaux sur Machine-1-5@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS TM G5 1 
+DESCRIPTION:ACS (Séance 1) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:14-15 301
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240123T084500
+DTEND;TZID=Europe/Paris:20240123T103000
+LAST-MODIFIED:20240129T010232
+UID:ACS-Travaux Dirigés-1-6@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS TD G6 1 
+DESCRIPTION:ACS (Séance 1) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:24-34 110
+SEQUENCE:2
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240123T104500
+DTEND;TZID=Europe/Paris:20240123T123000
+CREATED:20240119T002324
+UID:ACS-Travaux sur Machine-1-6@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS TM G6 1 
+DESCRIPTION:ACS (Séance 1) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:14-15 308
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240125T160000
+DTEND;TZID=Europe/Paris:20240125T174500
+LAST-MODIFIED:20240125T071436
+UID:ACS-Cours-2-0@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS Cours 2 
+DESCRIPTION:ACS (Séance 2) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:56 B
+SEQUENCE:2
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240129T140000
+DTEND;TZID=Europe/Paris:20240129T154500
+LAST-MODIFIED:20240205T025532
+UID:ACS-Travaux Dirigés-2-5@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS TD G5 2 
+DESCRIPTION:ACS (Séance 2) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:46-56 102
+SEQUENCE:2
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240129T160000
+DTEND;TZID=Europe/Paris:20240129T174500
+LAST-MODIFIED:20240205T025602
+UID:ACS-Travaux sur Machine-2-5@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS TM G5 2 
+DESCRIPTION:ACS (Séance 2) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:14-15 301
+SEQUENCE:2
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240130T084500
+DTEND;TZID=Europe/Paris:20240130T103000
+LAST-MODIFIED:20240205T025532
+UID:ACS-Travaux Dirigés-2-6@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS TD G6 2 
+DESCRIPTION:ACS (Séance 2) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:24-34 110
+SEQUENCE:2
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240130T104500
+DTEND;TZID=Europe/Paris:20240130T123000
+LAST-MODIFIED:20240205T025602
+UID:ACS-Travaux sur Machine-2-6@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS TM G6 2 
+DESCRIPTION:ACS (Séance 2) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:14-15 308
+SEQUENCE:2
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240201T160000
+DTEND;TZID=Europe/Paris:20240201T174500
+LAST-MODIFIED:20240201T095950
+UID:ACS-Cours-3-0@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS Cours 3 
+DESCRIPTION:ACS (Séance 3) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:56 B
+SEQUENCE:1
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240205T140000
+DTEND;TZID=Europe/Paris:20240205T154500
+LAST-MODIFIED:20240212T004434
+UID:ACS-Travaux Dirigés-3-5@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS TD G5 3 
+DESCRIPTION:ACS (Séance 3) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:46-56 102
+SEQUENCE:2
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240205T160000
+DTEND;TZID=Europe/Paris:20240205T174500
+LAST-MODIFIED:20240212T004449
+UID:ACS-Travaux sur Machine-3-5@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS TM G5 3 
+DESCRIPTION:ACS (Séance 3) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:14-15 301
+SEQUENCE:2
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240206T084500
+DTEND;TZID=Europe/Paris:20240206T103000
+LAST-MODIFIED:20240212T004434
+UID:ACS-Travaux Dirigés-3-6@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS TD G6 3 
+DESCRIPTION:ACS (Séance 3) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:24-34 110
+SEQUENCE:2
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240206T104500
+DTEND;TZID=Europe/Paris:20240206T123000
+LAST-MODIFIED:20240212T004449
+UID:ACS-Travaux sur Machine-3-6@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS TM G6 3 
+DESCRIPTION:ACS (Séance 3) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:14-15 308
+SEQUENCE:2
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240208T160000
+DTEND;TZID=Europe/Paris:20240208T174500
+LAST-MODIFIED:20240208T055940
+UID:ACS-Cours-4-0@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS Cours 4 
+DESCRIPTION:ACS (Séance 4) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:56 B
+SEQUENCE:1
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240212T140000
+DTEND;TZID=Europe/Paris:20240212T154500
+LAST-MODIFIED:20240225T222230
+UID:ACS-Travaux Dirigés-4-5@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS TD G5 4 
+DESCRIPTION:ACS (Séance 4) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:46-56 102
+SEQUENCE:2
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240212T160000
+DTEND;TZID=Europe/Paris:20240212T174500
+LAST-MODIFIED:20240225T222212
+UID:ACS-Travaux sur Machine-4-5@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS TM G5 4 
+DESCRIPTION:ACS (Séance 4) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:14-15 301
+SEQUENCE:2
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240213T084500
+DTEND;TZID=Europe/Paris:20240213T103000
+LAST-MODIFIED:20240225T222230
+UID:ACS-Travaux Dirigés-4-6@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS TD G6 4 
+DESCRIPTION:ACS (Séance 4) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:24-34 110
+SEQUENCE:2
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240213T104500
+DTEND;TZID=Europe/Paris:20240213T123000
+LAST-MODIFIED:20240225T222212
+UID:ACS-Travaux sur Machine-4-6@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS TM G6 4 
+DESCRIPTION:ACS (Séance 4) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:14-15 308
+SEQUENCE:2
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240215T160000
+DTEND;TZID=Europe/Paris:20240215T174500
+LAST-MODIFIED:20240215T072541
+UID:ACS-Cours-5-0@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS Cours 5 
+DESCRIPTION:ACS (Séance 5) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:56 B
+SEQUENCE:1
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240226T140000
+DTEND;TZID=Europe/Paris:20240226T154500
+LAST-MODIFIED:20240304T232406
+UID:ACS-Travaux Dirigés-5-5@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS TD G5 5 
+DESCRIPTION:ACS (Séance 5) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:46-56 102
+SEQUENCE:2
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240226T160000
+DTEND;TZID=Europe/Paris:20240226T174500
+LAST-MODIFIED:20240304T232428
+UID:ACS-Travaux sur Machine-5-5@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS TM G5 5 
+DESCRIPTION:ACS (Séance 5) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:14-15 301
+SEQUENCE:2
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240227T084500
+DTEND;TZID=Europe/Paris:20240227T103000
+LAST-MODIFIED:20240304T232406
+UID:ACS-Travaux Dirigés-5-6@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS TD G6 5 
+DESCRIPTION:ACS (Séance 5) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:24-34 110
+SEQUENCE:2
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240227T104500
+DTEND;TZID=Europe/Paris:20240227T123000
+LAST-MODIFIED:20240304T232428
+UID:ACS-Travaux sur Machine-5-6@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS TM G6 5 
+DESCRIPTION:ACS (Séance 5) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:14-15 308
+SEQUENCE:2
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240229T160000
+DTEND;TZID=Europe/Paris:20240229T174500
+LAST-MODIFIED:20240304T014932
+UID:ACS-Cours-6-0@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS Cours 6 
+DESCRIPTION:ACS (Séance 6) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:56 B
+SEQUENCE:1
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240304T140000
+DTEND;TZID=Europe/Paris:20240304T154500
+LAST-MODIFIED:20240318T024231
+UID:ACS-Travaux Dirigés-6-5@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS TD G5 6 
+DESCRIPTION:ACS (Séance 6) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:46-56 102
+SEQUENCE:2
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240304T160000
+DTEND;TZID=Europe/Paris:20240304T174500
+LAST-MODIFIED:20240318T024214
+UID:ACS-Travaux sur Machine-6-5@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS TM G5 6 
+DESCRIPTION:ACS (Séance 6) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:14-15 301
+SEQUENCE:2
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240305T084500
+DTEND;TZID=Europe/Paris:20240305T103000
+LAST-MODIFIED:20240318T024231
+UID:ACS-Travaux Dirigés-6-6@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS TD G6 6 
+DESCRIPTION:ACS (Séance 6) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:24-34 110
+SEQUENCE:2
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240305T104500
+DTEND;TZID=Europe/Paris:20240305T123000
+LAST-MODIFIED:20240318T024214
+UID:ACS-Travaux sur Machine-6-6@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS TM G6 6 
+DESCRIPTION:ACS (Séance 6) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:14-15 308
+SEQUENCE:2
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240307T160000
+DTEND;TZID=Europe/Paris:20240307T174500
+LAST-MODIFIED:20240307T092249
+UID:ACS-Cours-7-0@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS Cours 7 
+DESCRIPTION:ACS (Séance 7) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:56 B
+SEQUENCE:1
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240314T093000
+DTEND;TZID=Europe/Paris:20240314T123000
+LAST-MODIFIED:20250201T224446
+UID:ACS-Contrôles des Connaissances-1-0@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS CC 1 
+URL;VALUE=URI:https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev/Compact-Disk-Qualifie
+DESCRIPTION:ACS 1. Compact Disk Qualifié
+LOCATION:14-15 301\, 14-15 302\, 14-15 305\, 14-15 307\, 14-15 308
+SEQUENCE:5
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240318T140000
+DTEND;TZID=Europe/Paris:20240318T154500
+LAST-MODIFIED:20240325T193716
+UID:ACS-Travaux Dirigés-7-5@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS TD G5 7 
+DESCRIPTION:ACS (Séance 7) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:46-56 102
+SEQUENCE:2
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240318T160000
+DTEND;TZID=Europe/Paris:20240318T174500
+LAST-MODIFIED:20240325T193730
+UID:ACS-Travaux sur Machine-7-5@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS TM G5 7 
+DESCRIPTION:ACS (Séance 7) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:14-15 301
+SEQUENCE:2
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240319T084500
+DTEND;TZID=Europe/Paris:20240319T103000
+LAST-MODIFIED:20240325T193716
+UID:ACS-Travaux Dirigés-7-6@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS TD G6 7 
+DESCRIPTION:ACS (Séance 7) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:24-34 110
+SEQUENCE:2
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240319T104500
+DTEND;TZID=Europe/Paris:20240319T123000
+LAST-MODIFIED:20240325T193730
+UID:ACS-Travaux sur Machine-7-6@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS TM G6 7 
+DESCRIPTION:ACS (Séance 7) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:14-15 308
+SEQUENCE:2
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240321T160000
+DTEND;TZID=Europe/Paris:20240321T174500
+LAST-MODIFIED:20240328T023914
+UID:ACS-Cours-8-0@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS Cours 8 
+DESCRIPTION:ACS (Séance 8) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:56 B
+SEQUENCE:1
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240325T140000
+DTEND;TZID=Europe/Paris:20240325T154500
+LAST-MODIFIED:20240401T230714
+UID:ACS-Travaux Dirigés-8-5@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS TD G5 8 
+DESCRIPTION:ACS (Séance 8) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:46-56 102
+SEQUENCE:2
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240325T160000
+DTEND;TZID=Europe/Paris:20240325T174500
+LAST-MODIFIED:20240401T094247
+UID:ACS-Travaux sur Machine-8-5@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS TM G5 8 
+DESCRIPTION:ACS (Séance 8) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:14-15 301
+SEQUENCE:2
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240326T084500
+DTEND;TZID=Europe/Paris:20240326T103000
+LAST-MODIFIED:20240401T230714
+UID:ACS-Travaux Dirigés-8-6@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS TD G6 8 
+DESCRIPTION:ACS (Séance 8) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:24-34 110
+SEQUENCE:2
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240326T104500
+DTEND;TZID=Europe/Paris:20240326T123000
+LAST-MODIFIED:20240401T094247
+UID:ACS-Travaux sur Machine-8-6@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS TM G6 8 
+DESCRIPTION:ACS (Séance 8) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:14-15 308
+SEQUENCE:2
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240328T160000
+DTEND;TZID=Europe/Paris:20240328T174500
+LAST-MODIFIED:20240328T060050
+UID:ACS-Cours-9-0@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS Cours 9 
+DESCRIPTION:ACS (Séance 9) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:56 B
+SEQUENCE:1
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240402T084500
+DTEND;TZID=Europe/Paris:20240402T103000
+LAST-MODIFIED:20240429T002046
+UID:ACS-Travaux Dirigés-9-6@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS TD G6 9 
+DESCRIPTION:ACS (Séance 9) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:24-34 110
+SEQUENCE:2
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240402T104500
+DTEND;TZID=Europe/Paris:20240402T123000
+LAST-MODIFIED:20240429T002109
+UID:ACS-Travaux sur Machine-9-6@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS TM G6 9 
+DESCRIPTION:ACS (Séance 9) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:14-15 308
+SEQUENCE:2
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240404T160000
+DTEND;TZID=Europe/Paris:20240404T174500
+LAST-MODIFIED:20240404T103429
+UID:ACS-Cours-10-0@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS Cours 10 
+DESCRIPTION:ACS (Séance 10) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:56 B
+SEQUENCE:1
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240422T140000
+DTEND;TZID=Europe/Paris:20240422T154500
+LAST-MODIFIED:20240429T002046
+UID:ACS-Travaux Dirigés-9-5@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS TD G5 9 
+DESCRIPTION:ACS (Séance 9) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:46-56 102
+SEQUENCE:2
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240422T160000
+DTEND;TZID=Europe/Paris:20240422T174500
+LAST-MODIFIED:20240429T002109
+UID:ACS-Travaux sur Machine-9-5@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS TM G5 9 
+DESCRIPTION:ACS (Séance 9) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:14-15 301
+SEQUENCE:2
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240423T084500
+DTEND;TZID=Europe/Paris:20240423T103000
+LAST-MODIFIED:20240506T010536
+UID:ACS-Travaux Dirigés-10-6@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS TD G6 10 
+DESCRIPTION:ACS (Séance 10) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:24-34 110
+SEQUENCE:2
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240423T104500
+DTEND;TZID=Europe/Paris:20240423T123000
+LAST-MODIFIED:20240506T010553
+UID:ACS-Travaux sur Machine-10-6@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS TM G6 10 
+DESCRIPTION:ACS (Séance 10) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:14-15 308
+SEQUENCE:2
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240425T160000
+DTEND;TZID=Europe/Paris:20240425T174500
+LAST-MODIFIED:20240425T054707
+UID:ACS-Cours-11-0@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS Cours 11 
+DESCRIPTION:ACS (Séance 11) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:56 B
+SEQUENCE:1
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240429T140000
+DTEND;TZID=Europe/Paris:20240429T154500
+LAST-MODIFIED:20240506T010536
+UID:ACS-Travaux Dirigés-10-5@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS TD G5 10 
+DESCRIPTION:ACS (Séance 10) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:46-56 102
+SEQUENCE:2
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240429T160000
+DTEND;TZID=Europe/Paris:20240429T174500
+LAST-MODIFIED:20240506T010553
+UID:ACS-Travaux sur Machine-10-5@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS TM G5 10 
+DESCRIPTION:ACS (Séance 10) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:14-15 301
+SEQUENCE:2
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240430T084500
+DTEND;TZID=Europe/Paris:20240430T103000
+LAST-MODIFIED:20240514T032133
+UID:ACS-Travaux Dirigés-11-6@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS TD G6 11 
+DESCRIPTION:ACS (Séance 11) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:24-34 110
+SEQUENCE:2
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240430T104500
+DTEND;TZID=Europe/Paris:20240430T123000
+LAST-MODIFIED:20240514T032146
+UID:ACS-Travaux sur Machine-11-6@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS TM G6 11 
+DESCRIPTION:ACS (Séance 11) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:14-15 308
+SEQUENCE:2
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240506T140000
+DTEND;TZID=Europe/Paris:20240506T154500
+LAST-MODIFIED:20240514T032133
+UID:ACS-Travaux Dirigés-11-5@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS TD G5 11 
+DESCRIPTION:ACS (Séance 11) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:24-34 312
+SEQUENCE:2
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240506T160000
+DTEND;TZID=Europe/Paris:20240506T174500
+LAST-MODIFIED:20240514T032146
+UID:ACS-Travaux sur Machine-11-5@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS TM G5 11 
+DESCRIPTION:ACS (Séance 11) 
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:14-15 301
+SEQUENCE:2
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240521T163000
+DTEND;TZID=Europe/Paris:20240521T193000
+LAST-MODIFIED:20250201T224505
+UID:ACS-Contrôles des Connaissances-2-0@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS CC 2 
+URL;VALUE=URI:https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev/Consulter-ses-notes
+DESCRIPTION:ACS 2. Consulter ses notes
+ATTENDEE:mailto:emmanuel.saint-james@upmc.fr
+LOCATION:14-15 301\, 14-15 302\, 14-15 303\, 14-15 305\, 14-15 307\, 14-15 308
+SEQUENCE:7
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Paris:20240626T133000
+DTEND;TZID=Europe/Paris:20240626T163000
+LAST-MODIFIED:20250201T224520
+UID:ACS-Contrôles des Connaissances-3-0@https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev
+SUMMARY:ACS CC 3 
+URL;VALUE=URI:https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2023/ue/LU2IN022-2024fev/Gestion-de-documents-a-travers-le
+DESCRIPTION:ACS 3. Gestion de documents à travers le Web
+LOCATION:14-15 305\, 14-15 307\, 14-15 308
+SEQUENCE:6
+END:VEVENT
+END:VCALENDAR

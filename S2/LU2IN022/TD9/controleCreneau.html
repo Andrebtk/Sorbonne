@@ -1,0 +1,106 @@
+<script>
+    var re_jour = /^[0-9]{4}[01][0-9][0-3][0-9]$/;
+    var re2 = new RegExp("^ *([01]\\d|2[0-3])[0-5]\\d[0-5]\\d *$");
+
+    function saisieIncorrecte(input, re)
+    {
+        var t = re ? re.test(input.value) : true;
+        /// pour mettre en rouge pointille les fautifs:
+        input.style.border = t ? "1px solid" : '2px dashed red';
+        return t ? false : input;
+    }
+
+
+	function controleCreneau(node) {
+        var t = node.elements;
+        var b = false;
+
+        b = b || saisieIncorrecte(t['jour'], re_jour);
+        b = b || saisieIncorrecte(t['debut'], re2);
+        b = b || saisieIncorrecte(t['fin'], re2);
+        b = b || saisieIncorrecte(t['ICS'], /./);
+
+        if(b) {
+            alert("Saisie incorect");
+            return false;
+        }else{
+            if(t['debut']<=t["fin"]){
+                return true;
+            }else {
+                alert("Debut > fin");
+                return false;
+            }
+        }
+
+
+	}
+
+    var tmp = false;
+
+    function memoriseFocus(node, reg) {  //<- event blur
+        tmp = saisieIncorrecte(node, reg);
+    }
+
+    function redonneFocus() { //<- event focus
+        if (tmp){
+            tmp.focus();
+            tmp = false;
+        }
+    }
+
+
+    function initCreneau(){
+        var t = document.querySelectorAll("form")[0].elements;
+
+        t['jour'].value = date8Chiffres();
+        t['debut'].value = 120000; 
+        t['fin'].value = 130000;
+        
+        t['jour'].addEventListener('focus', redonneFocus);
+        t['debut'].addEventListener('focus', redonneFocus);
+        t['fin'].addEventListener('focus', redonneFocus);
+
+
+        t['jour'].addEventListener('blur', function(){return memoriseFocus(t['jour'],re_jour)});
+        t['debut'].addEventListener('blur', function(){return memoriseFocus(t['debut'],re_jour)});
+        t['fin'].addEventListener('blur', function(){return memoriseFocus(t['fin'],re_jour)});
+        t['ICS'].addEventListener('change', function(){return memoriseFocus(t['ICS'], '')});
+
+        
+        console.log(t);
+    }
+
+</script>
+
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML Basic 1.1//EN'
+		'http://www.w3.org/TR/xhtml-basic/xhtml-basic11.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml' lang='fr'>
+<head>
+<meta http-equiv='Content-Type' content='text/html;charset=utf-8' />
+<title>Créneau horaire</title>
+</head>
+<body onload="initCreneau()">
+  <h1>Créneau horaire</h1>
+  <form action="" method="post" enctype="multipart/form-data"
+	onsubmit='return controleCreneau(this)'>
+      <fieldset>
+	<label for='jour'>Jour</label>
+	<input name='jour' id='jour' />
+	<label for='debut'>Commencement</label>
+	<input name='debut' id='debut' />
+	<label for='fin'>Fin</label>
+	<input name='fin' id='fin' />
+      </fieldset>
+      <fieldset>
+	<label for='ICS'>Agenda</label>
+	<input type='file' name='ICS' id='ICS' accept='text/calendar' />
+	<input type='submit' value='Demander ce rendez-vous' />
+    </fieldset>
+  </form>
+  <script type='text/javascript' src='saisieIncorrecte.js'></script> 
+  <script type='text/javascript' src='date8Chiffres.js'></script> 
+  <script type='text/javascript' src='reICS.js'></script> 
+  <script type='text/javascript' src='focusICS.js'></script> 
+  <script type='text/javascript' src='initCreneau.js'></script> 
+  <script type='text/javascript' src='controleCreneau.js'></script> 
+</body></html>

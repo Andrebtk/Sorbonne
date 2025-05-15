@@ -1,0 +1,10 @@
+li {
+    background-color: aqua;
+}
+a:hover {
+    color: white;
+}
+li:hover {
+    background-color: rebeccapurple;
+    text-align: center;
+}
