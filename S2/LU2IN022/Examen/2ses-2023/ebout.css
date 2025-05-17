@@ -1,0 +1,41 @@
+.wrapper {
+    width:800px;
+    margin:auto
+  }
+  .main {
+    clear:both;
+    margin-top:2em;
+  }
+  .main img {
+    width:180px;
+    float:left;
+  }
+  .main div.article  {
+    clear: both;
+    margin: 1em auto;
+    height:180px;
+  }
+  .main .mettre  {
+    text-align:right;
+  }
+  .main .prix  {
+    text-align:right;
+    padding-right:2em;
+  }
+  .voirpanier {
+    float:right
+  }
+  .total {
+    text-align : right; 
+    padding-right: 2em;
+  }
+  .article label {
+    display:block;
+    text-align : right;
+    padding-right:2em;
+  }
+.nav {
+    margin-bottom: 1em;
+    list-style-position: outside;
+    padding: 0;
+}

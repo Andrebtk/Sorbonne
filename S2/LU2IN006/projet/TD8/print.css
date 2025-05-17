@@ -1,0 +1,15 @@
+/* compenser la disparition des couleurs par une bordure fine */
+
+table.edt td+td+td[rowspan] { 
+	border: 1px solid;
+} 
+
+table.edt td {
+	border-top: 1px dashed ;
+	border-bottom: 1px dashed ;
+	border-right: 1px solid;
+}
+
+table.edt td[rowspan] { 
+	border: 0; 
+}

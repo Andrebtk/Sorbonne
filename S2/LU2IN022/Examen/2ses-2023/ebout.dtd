@@ -1,0 +1,23 @@
+<!ELEMENT eboutique (categorie*) >
+<!ELEMENT categorie (article*)>
+<!ELEMENT article (media, genre+, descrition, mot-clef+) >
+
+<!ELEMENT media Empty >
+<!ELEMENT genre (#PCDATA)>
+<!ELEMENT description (#PCDATA)>
+<!ELEMENT mot-clef (#PCDATA)>
+
+<!ATTLIST categorie
+    id CDATA #REQUIRED
+    libelle CDATA #REQUIRED
+>
+
+<!ATTLIST article
+    id CDATA #REQUIRED
+    prix CDATA #REQUIRED
+    stock CDATA #REQUIRED
+>
+
+<!ATTLIST media 
+    url CDATA #IMPLIED
+>

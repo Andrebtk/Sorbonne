@@ -1,0 +1,9 @@
+table.edt { text-align: center; width: 100%;}
+table.edt caption { font-weight: bold; background: #ccc}
+table.edt td+td+td[rowspan] {font-style: italic;}
+table.edt td+td+td+td[rowspan] {
+ font-style: normal; /* neutraliser la regle ci-dessus,  */
+ font-variant: small-caps; /* et pas besoin de neutraliser celle-ci apres car dernier rowspan */
+}
+/* Si un TD est reduit a un UL, la presentation std est une perte de place */
+table.edt td > ul:first-child:last-child {list-style-type: none; padding: 0; margin:0}

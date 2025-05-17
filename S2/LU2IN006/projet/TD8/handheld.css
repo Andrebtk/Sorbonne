@@ -1,0 +1,22 @@
+/* Bleu */  
+table.edt tr:nth-child(10n+2),
+table.edt tr:nth-child(10n+3) { background: #edf3fe;  color: #5da7c5; }
+
+/* Bleu pastel */
+table.edt tr:nth-child(10n+4),
+table.edt tr:nth-child(10n+5) { background: #ebe9ff; color: #766CF6; }
+
+/* Orange */ 
+table.edt tr:nth-child(10n+6),
+table.edt tr:nth-child(10n+7) { background: #fec; color: #fa9a00; }
+
+/* Rouge */
+table.edt tr:nth-child(10n+8),
+table.edt tr:nth-child(10n+9) { background: #ffeded; color: #f00; }
+
+/* Neutraliser la premiere ligne et les 2 premieres colonnes */
+table.edt th, table.edt td[rowspan] { display: none;}
+
+/* Pour toutes les autres, supprimer la bordure et occuper toute la largeur */
+table.edt td, table.edt td+td+td[rowspan]
+ { display: block; width: 100%; border: 0 }

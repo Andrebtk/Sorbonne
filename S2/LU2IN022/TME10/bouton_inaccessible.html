@@ -1,0 +1,29 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Strict//EN'
+    'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>
+<html xml:lang='fr' lang='fr' dir='ltr' xmlns='http://www.w3.org/1999/xhtml'>
+  <head>
+    <meta http-equiv='Content-Type' content='text/html;charset=utf-8' />
+    <title>Un bouton inaccessible</title>
+    <link rel="shortcut icon"  type='image/x-icon'
+	  href="https://www-licence.ufr-info-p6.jussieu.fr/lmd/licence/2021/ue/LU2IN022-2022fev/squelettes-dist/spip.ico" />
+    <style type='text/css'>
+      button {border:5px solid;border-radius:9px;text-decoration:underline}
+      ul {margin-left:-2em}
+      #oui {color:green;border-color:green;font-weight:900;
+	    position:absolute;left:120px;top:65px;}
+      #non {color:red;border-color:red;font-weight:100;
+	    position:absolute;left:170px;top:65px;}
+      #titre {text-align:center;margin-top:-1em}
+    </style>
+  </head>
+  <body onload="reveille()">
+    <div>
+      <div id='titre' style='font-size:1.5em'><h1>Aimez-vous cet exercice ?</h1></div>
+      <button id='oui' onclick='merci(this)'>OUI</button>
+      <button id='non' onclick='merci(this)'
+	      style='opacity:.9' onmouseover='bouger(this)'>NON</button>
+    </div>
+    <script type='text/javascript' src='inaccessible_trace.js'></script>
+    <script type='text/javascript' src='ajax.js'></script>
+  </body>
+</html>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE notes SYSTEM "notes.dtd">
+<notes>
+    <cours nom="Algorithmique" code="LU2IN001">
+        <partiel coefficient="2">
+            <etudiant numero="21210001">12</etudiant>
+            <etudiant numero="21210002">15</etudiant>
+            <etudiant numero="21210003">10</etudiant>
+            <etudiant numero="21210004">8</etudiant>
+            <etudiant numero="21210011">14</etudiant>
+            <etudiant numero="21210012">16</etudiant>
+            <etudiant numero="21210013">12</etudiant>
+            <etudiant numero="21210014">10</etudiant>
+            <etudiant numero="21210015">14</etudiant>
+        </partiel>
+        <final coefficient="3">
+            <etudiant numero="21210001">14</etudiant>
+            <etudiant numero="21210002">16</etudiant>
+            <etudiant numero="21210003">12</etudiant>
+            <etudiant numero="21210011">16</etudiant>
+            <etudiant numero="21210012">18</etudiant>
+            <etudiant numero="21210014">14</etudiant>
+            <etudiant numero="21210015">12</etudiant>
+        </final>
+    </cours>
+    <cours nom="Base de données" code="LU2IN002">
+        <partiel coefficient="2">
+            <etudiant numero="21210001">14</etudiant>
+            <etudiant numero="21210002">16</etudiant>
+            <etudiant numero="21210003">12</etudiant>
+            <etudiant numero="21210004">10</etudiant>
+            <etudiant numero="21210011">16</etudiant>
+            <etudiant numero="21210012">18</etudiant>
+            <etudiant numero="21210013">14</etudiant>
+            <etudiant numero="21210016">12</etudiant>
+        </partiel>
+        <tp>
+            <etudiant numero="21210001">16</etudiant>
+            <etudiant numero="21210002">18</etudiant>
+            <etudiant numero="21210003">14</etudiant>
+            <etudiant numero="21210005">12</etudiant>
+            <etudiant numero="21210011">18</etudiant>
+            <etudiant numero="21210012">20</etudiant>
+            <etudiant numero="21210015">16</etudiant>
+            <etudiant numero="21210016">14</etudiant>
+        </tp>
+        <final coefficient="5">
+            <etudiant numero="21210001">9</etudiant>
+            <etudiant numero="21210002">18</etudiant>
+            <etudiant numero="21210003">14</etudiant>
+            <etudiant numero="21210011">18</etudiant>
+            <etudiant numero="21210012">20</etudiant>
+            <etudiant numero="21210015">16</etudiant>
+        </final>
+    </cours>
+    <cours nom="Logique" code="LU2IN003">
+        <final>
+            <etudiant numero="21210001">18</etudiant>
+            <etudiant numero="21210002">20</etudiant>
+            <etudiant numero="21210003">16</etudiant>
+            <etudiant numero="21210004">16</etudiant>
+            <etudiant numero="21210005">14</etudiant>
+            <etudiant numero="21210006">12</etudiant>
+            <etudiant numero="21210007">10</etudiant>
+            <etudiant numero="21210008">8</etudiant>
+            <etudiant numero="21210009">6</etudiant>
+            <etudiant numero="21210010">4</etudiant>
+        </final>
+    </cours>
+</notes>

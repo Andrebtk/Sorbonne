@@ -1,0 +1,57 @@
+table.edt th { width: 12%;} /* Groupe */
+table.edt th+th { width: 35%;} /* Intervenant */
+table.edt th+th+th { width: 25%;} /* Salle */
+table.edt th+th+th+th { width: 10%;} /* Jour */
+table.edt th+th+th+th+th { width: 18%;} /* Horaire */
+
+table.edt td { border: 1px solid;}
+
+ /* Bleu */ 
+table.edt tr:nth-child(10n+2),
+table.edt tr:nth-child(10n+3) {
+	background: #edf3fe; border-color: #5da7c5; color: #5da7c5;
+} 
+
+/* Bleu pastel */ 
+table.edt tr:nth-child(10n+4),
+table.edt tr:nth-child(10n+5) { 
+	background: #ebe9ff; border-color: #766cf6; color: #766CF6;
+} 
+
+ /* Orange */
+table.edt tr:nth-child(10n+6),
+table.edt tr:nth-child(10n+7) {
+	background: #fec; border-color: #fa9a00; color: #fa9a00;
+} 
+ 
+ /* Rouge */
+table.edt tr:nth-child(10n+8),
+table.edt tr:nth-child(10n+9) {
+	background: #ffeded; border-color: #f00; color: #f00;
+} 
+
+/* Pour forcer la superposition verticale, display:block est indispensable */
+a.abonnement {
+	height: 2em;
+	width: 2em;
+	margin-left: 1em;
+	display: block;
+	background: url(agenda-24.gif) no-repeat;
+}
+a.telechargement {
+	height: 2em;
+	width: 2em;
+	margin-left: 1em;
+	display: block;
+	background: url(calendrier-24.gif) no-repeat;
+}
+/* Pour que le texte qui suit ne provoque pas un saut de ligne, pas de bloc. */
+/* Cependant display:inline ferait croire que cette balise vide est superflue */
+/* display:inline-block est la seule solution */
+
+.modif {
+	width: .75em;
+	height: .75em;
+	display: inline-block;
+	background: url(puce-blanche.gif)  no-repeat;
+}
