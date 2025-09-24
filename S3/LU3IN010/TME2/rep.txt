@@ -1,0 +1,57 @@
+Exercice 1
+
+1)  
+$ time sleep 5
+sleep 5  0.00s user 0.00s system 0% cpu 5.010 total
+
+Quand on exécute time sleep 5, la commande sleep 5 met environ 5 secondes 
+de temps réel (total) à s'exécuter, mais le temps utilisateur et le temps 
+système sont presque nuls, car le processus est bloquer 
+
+2)
+$time ./loopcpu
+real    0m9,894s
+user    0m9,892s
+sys     0m0,001s
+
+Le temps réel et le temps utilisateur sont proches l'un de l'autre , 
+tandis que le temps système est négligeable, car le programme passe 
+la quasi-totalité de son temps à faire des calculs dans l'espace utilisateur.
+
+3)
+$ time ./loopsys
+real    0m4,099s
+user    0m1,219s
+sys     0m2,879s
+
+Le temps système est nettement supérieur au temps utilisateur, car 
+le programme effectue un grand nombre d'appels système (getpid()) qui 
+nécessitent de passer en mode noyau.
+
+
+
+Exercice 5)
+
+1)
+La priorité d'un processus lancé sans modification explicite est 
+caractérisée par une valeur nice (NI) de 0. Dans ce cas, la priorité du noyau 
+(PRI) associée est de 80.
+
+2)
+La commande ps -l est maintenant exécutée avec une valeur Nice (NI) de 19, 
+ce qui correspond à la priorité la plus basse que l'on peut attribuer en tant 
+qu'utilisateur non privilégié. En conséquence, la priorité du noyau (PRI) passe 
+de 80 à 99.
+
+3)
+Puisque la machine a 16 cœurs et que seuls 9 processus sont lancés, il y a suffisamment 
+de ressources pour tous les processus. Par conséquent, l'effet de l'abaissement de priorité 
+(nice -n 19) ne sera pas visible; tous les processus auront des Temps total mesurés par mytimes 
+similaires. 
+
+L'exécution se fait en parallèle en utilisant l'esperluette (&) : 
+mytimes ./loopcpu & ... & nice -n 19 mytimes ./loopcpu & 
+
+L'effet du nice -n 19 ne se manifeste que lorsque la machine est en surcharge CPU 
+(par exemple, en lançant 17 processus sur 16 cœurs). Dans ce cas de surcharge, le 
+processus avec NI=19 finirait nettement plus tard que les autres.
