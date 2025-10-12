@@ -1,0 +1,107 @@
+TME 4 – GESTION DE PROCESSUS
+
+
+Exercice 1 - MULTI-GREP SIMPLE
+
+
+void multiGrep(int argc, char **argv) {
+	printf("Multi-grep sur \"%s\"\n", argv[1]);
+
+    for(int i=2; i<argc; i++) {
+        int p = fork();
+
+		if(p==0){
+			int err = execl("/bin/grep", "grep", argv[1], argv[i], NULL);
+			perror("Erreur exec");
+			exit(1);
+		}
+
+    }
+
+	for(int i=0; i<argc-2; i++) {
+		wait(NULL);
+	}
+}
+
+
+Exercice 2 - MULTI-GREP A PARALLELISME CONTRAINT
+
+
+void multiGrepConstraint(int argc, char **argv){
+	printf("Multi-grep constraint sur \"%s\"\n", argv[1]);
+
+	int num_proc_fils = 0;
+
+	for(int i=2; i<argc; i++) {
+		
+		if (num_proc_fils >= MAXFILS) {
+			wait(NULL);
+			num_proc_fils--;
+		}
+
+		int p = fork();
+		if(p==0){
+			int err = execl("/bin/grep", "grep", argv[1], argv[i], NULL);
+			perror("Erreur exec");
+			exit(1);
+		}
+		num_proc_fils++;
+	}
+
+	for(int i =0; i<num_proc_fils; i++) {
+		wait(NULL);
+	}
+}
+
+
+Exercice 3 - MULTI-GREP AVEC STATISTIQUES
+
+
+void multiGrepStat(int argc, char **argv) {
+	printf("Multi-grep sur \"%s\"\n", argv[1]);
+
+	struct rusage r;
+
+    for(int i=2; i<argc; i++) {
+        int p = fork();
+
+		if(p==0){
+			int err = execl("/bin/grep", "grep", argv[1], argv[i], NULL);
+			perror("Erreur exec");
+			exit(1);
+		}
+    }
+
+	for(int i=0; i<argc-2; i++) {
+		wait3(NULL, 0, &r);
+		printf("Temps Util. : %f\n", r.ru_utime.tv_sec + 1E-6*r.ru_utime.tv_usec);
+		printf("Temps Sys. : %f\n\n", r.ru_stime.tv_sec + 1E-6*r.ru_stime.tv_usec);
+	}
+}
+
+
+Exercice 4 - PROCESSUS "ZOMBIE"
+
+4.1)
+Etat d'un processus terminé tant que son père n'a pas pris connaissance de
+sa terminaison (wait).
+
+4.2)
+
+void zombie() {
+	//Pere
+	
+	int p = fork();
+	if(p==0) { // Fils 1
+		exit(0);
+	}
+
+	p = fork();
+	if(p==0) { // Fils 1
+		exit(0);	
+	}
+
+	sleep(10);
+	wait(NULL);
+	wait(NULL);
+}

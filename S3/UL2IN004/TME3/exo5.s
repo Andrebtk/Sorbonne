@@ -17,6 +17,8 @@
 	ori $2, $0, 11
 	syscall
 	
+	
+	
 	# Partie 2/3
 	ori $3, $0, 0xABCD 		# objectif $5=0xDBAC	
 
@@ -49,10 +51,13 @@
 	ori $4, $0, 0x0A 		# code ASCII pour '\n' (LF)
 	ori $2, $0, 11
 	syscall
+	
 	# Affiche '\n'	
 	ori $4, $0, 0x0A 		# code ASCII pour '\n' (LF)
 	ori $2, $0, 11
 	syscall
+	
+	
 	
 	
 	# Sur 32 bit - Partie 3/3
