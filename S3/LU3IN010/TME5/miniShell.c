@@ -22,16 +22,22 @@ int main(int argc, char *argv[]) {
 	int w;
 	int times_actif;
 
+
+	// Boucle principale du shell
 	for(;;) {
 		int w = 1;
 		times_actif = 0;
 
 		printf("$> ");
+		// Lit la commande utilisateur
 		getInput(input, &w);
 		
 
 		char* separateur = " ";
 		char *list_arg[NBARGS];
+		
+		
+		// Separe la commande en arguments et passe si entrée vide
 		get_arguments(input, separateur, list_arg);
 		if (list_arg[0] == NULL) continue;
 		
@@ -52,24 +58,33 @@ int main(int argc, char *argv[]) {
 		}
 
 
+		// Construire le chemin complet de la commande à exécuter
 		char com[100] = "/bin/";
 		int lenght_input = strlen(list_arg[0]);
 		strncat(com, list_arg[0], lenght_input);
 
+
 		int p = fork();
+
+		// Processus fils : exécuter la commande
 		if(p==0) {
 			int err = execv(com, list_arg);
 			perror("Erreur commande");
 			exit(1);
-		}
+		} 
 
+		// Si mode "times", attendre la fin du fils et afficher le temps CPU
 		if(times_actif == 1) {
 			wait3(NULL, 0, &r);
 			printf("Temps Util. : %f\n", r.ru_utime.tv_sec + 1E-6*r.ru_utime.tv_usec);
 			printf("Temps Sys. : %f\n\n", r.ru_stime.tv_sec + 1E-6*r.ru_stime.tv_usec);
-		} else if(w == 1) {
+		} 
+		// Sinon, attendre la fin du fils si ce n'est pas un processus en arrière-plan
+		else if(w == 1) {
 			wait(NULL);
-		} else {
+		} 
+		// Indiquer que le processus s'exécute en arrière-plan
+		else {
 			printf("[Processus en arrière-plan]\n");
 		}
 
