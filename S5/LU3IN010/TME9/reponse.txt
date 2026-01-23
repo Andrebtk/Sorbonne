@@ -1,0 +1,222 @@
+TM9: REMPLACEMENT DE PAGES | Andre Bertok 21204512
+
+Exercice 1:
+
+1.1)
+
+int initFifo(Swapper* swap){
+	swap->private_data = malloc(sizeof(int));
+	if(swap->private_data == NULL) return -1;
+
+	*(int*) (swap->private_data) = 0;
+	return 0;
+}
+
+/*
+Fonction qui sera appelée lors d’un défaut de page. Elle doit retourner le numéro de la case
+contenant la page victime
+*/
+unsigned int fifoChoose(Swapper* swap){
+
+	int *next_victime  = (int*)swap->private_data;
+	unsigned int victime = *next_victime;
+	*next_victime = (*next_victime + 1) % swap->frame_nb;
+
+	return victime;
+}
+
+void finalizeFifo(Swapper* swap){
+	free(swap->private_data);
+	return;
+}
+
+1.2)
+
+make && ./mainFifo < bench
+gcc -Wall -D_DEBUG_   -c Fifo.c -I/Infos/lmd/2018/licence/ue/3I010-2019fev/libmem/include -o Fifo.o
+gcc -Wall -D_DEBUG_   -I/Infos/lmd/2018/licence/ue/3I010-2019fev/libmem/include mainFifo.c *.o -o mainFifo -L/Infos/lmd/2018/licence/ue/3I010-2019fev/libmem/lib -lmem
+gcc -Wall -D_DEBUG_   -c LRU.c -I/Infos/lmd/2018/licence/ue/3I010-2019fev/libmem/include -o LRU.o
+gcc -Wall -D_DEBUG_   -I/Infos/lmd/2018/licence/ue/3I010-2019fev/libmem/include mainLRU.c *.o -o mainLRU -L/Infos/lmd/2018/licence/ue/3I010-2019fev/libmem/lib -lmem
+Page 1 referenced
+/!\ PAGE FAULT !!! /!\
+Frame 0 has been choosen
+(frame 0: 1) (frame 1: _) (frame 2: _) 
+
+Page 2 referenced
+/!\ PAGE FAULT !!! /!\
+Frame 1 has been choosen
+(frame 0: 1) (frame 1: 2) (frame 2: _) 
+
+Page 3 referenced
+/!\ PAGE FAULT !!! /!\
+Frame 2 has been choosen
+(frame 0: 1) (frame 1: 2) (frame 2: 3) 
+
+Page 1 referenced
+(frame 0: 1) (frame 1: 2) (frame 2: 3) 
+
+Page 2 referenced
+(frame 0: 1) (frame 1: 2) (frame 2: 3) 
+
+Page 4 referenced
+/!\ PAGE FAULT !!! /!\
+Frame 0 has been choosen
+(frame 0: 4) (frame 1: 2) (frame 2: 3) 
+
+Page 1 referenced
+/!\ PAGE FAULT !!! /!\
+Frame 1 has been choosen
+(frame 0: 4) (frame 1: 1) (frame 2: 3) 
+
+Page 2 referenced
+/!\ PAGE FAULT !!! /!\
+Frame 2 has been choosen
+(frame 0: 4) (frame 1: 1) (frame 2: 2) 
+
+Page 4 referenced
+(frame 0: 4) (frame 1: 1) (frame 2: 2) 
+
+Page 4 referenced
+(frame 0: 4) (frame 1: 1) (frame 2: 2) 
+
+6/10 ~ 60.000000%
+21204512@ppti-24-304-09:~/Bureau/Licence/L3/010/TME9$ 
+
+
+
+
+Exercice 2 : 
+
+2.1)
+
+
+int	initLRU(Swapper*swap){
+	swap->private_data = calloc(swap->frame_nb, sizeof(InfoLRU));
+
+	if (swap->private_data == NULL) return -1;
+
+	global_clock = 0;
+
+	return 0;
+}
+
+/*
+Fonction qui sera appelée lors d’un accès à la case mémoire numéro frame
+*/
+void referenceLRU(Swapper* swap, unsigned int frame){
+
+	InfoLRU *info = (InfoLRU*) swap->private_data;
+
+	// On incrémente l'horloge globale
+	global_clock++;
+
+	// On met à jour l'horloge de la frame spécifique
+	info[frame].clock = global_clock;
+
+}
+
+
+/*
+Fonction qui sera appelée lors d’un défaut de page. Elle doit retourner le numéro de la case
+contenant la page victime.
+*/
+unsigned int chooseLRU(Swapper* swap){
+	
+	InfoLRU *info = (InfoLRU*) swap->private_data;
+
+	unsigned int val_victim = info[0].clock;
+	unsigned int victim = 0;
+
+
+	for(unsigned int i=1; i < swap->frame_nb; i++) {
+		if(info[i].clock < val_victim) {
+			val_victim = info[i].clock;
+			victim = i;
+		}
+	}
+
+	return victim;
+}
+
+void finalizeLRU(Swapper* swap){
+	free(swap->private_data);
+}
+
+2.2)
+
+
+21204512@ssh:~/Bureau/Licence/L3/010/TME9$ ./mainLRU < bench
+Page 1 referenced
+/!\ PAGE FAULT !!! /!\
+Frame 0 has been choosen
+(frame 0: 1) (frame 1: _) (frame 2: _) 
+
+Page 2 referenced
+/!\ PAGE FAULT !!! /!\
+Frame 1 has been choosen
+(frame 0: 1) (frame 1: 2) (frame 2: _) 
+
+Page 3 referenced
+/!\ PAGE FAULT !!! /!\
+Frame 2 has been choosen
+(frame 0: 1) (frame 1: 2) (frame 2: 3) 
+
+Page 1 referenced
+(frame 0: 1) (frame 1: 2) (frame 2: 3) 
+
+Page 2 referenced
+(frame 0: 1) (frame 1: 2) (frame 2: 3) 
+
+Page 4 referenced
+/!\ PAGE FAULT !!! /!\
+Frame 2 has been choosen
+(frame 0: 1) (frame 1: 2) (frame 2: 4) 
+
+Page 1 referenced
+(frame 0: 1) (frame 1: 2) (frame 2: 4) 
+
+Page 2 referenced
+(frame 0: 1) (frame 1: 2) (frame 2: 4) 
+
+Page 4 referenced
+(frame 0: 1) (frame 1: 2) (frame 2: 4) 
+
+Page 4 referenced
+(frame 0: 1) (frame 1: 2) (frame 2: 4) 
+
+4/10 ~ 40.000000%
+
+
+Exercice 3:
+
+
+3.1)
+
+En lançant les deux programmes avec le fichier bench, 
+on constate une nette différence de performance :
+
+FIFO : Affiche 60%. Cela correspond à 6 défauts de page.
+
+LRU : Affiche 40%. Il n'a généré que 4 défauts de page.
+
+
+LRU est plus performant. Un pourcentage plus bas est meilleur,
+car cela signifie que l'algorithme a réussi à conserver 
+les données utiles en mémoire plus souvent que FIFO.
+
+3.2)
+
+Tout se joue au moment où la page 4 doit être chargée. À cet instant, 
+la mémoire est pleine (1, 2, 3) et nous venons tout juste de relire les pages 1 et 2.
+
+C'est là que les stratégies divergent :
+
+FIFO reste aveugle à ces relectures récentes. 
+Il supprime la page 1 simplement parce qu'elle est arrivée en premier. 
+Manque de chance : le programme en a besoin juste après, ce qui provoque 
+une erreur évitable.
+
+LRU, au contraire, a "remarqué" que les pages 1 et 2 étaient actives. 
+Il les protège et choisit plutôt d'éliminer la page 3, qui n'avait 
+pas servi depuis longtemps. Résultat : quand le programme redemande 
+la 1 et la 2, elles sont toujours là.

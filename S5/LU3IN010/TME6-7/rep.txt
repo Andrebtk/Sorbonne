@@ -1,0 +1,161 @@
+TME 6-7: SYNCHRONISATIONS PAR SEMAPHORES 
+
+
+Exercice 1: MISE EN OEUVRE AVEC UN TAMPON A UNE SEULE CASE
+
+1.1)
+ - Pour assurer la cohérence de la variable partagée nb_recepteur, il nous faut un mutex (sémaphore initialisé à 1)
+ - Semaphore:
+        - init_un_sem(MUTEXNBREC, 1); <- Protége nb_recepteurs
+
+        - init_un_sem(EMET, 1); <- Une case est libre initialement pour l'émetteur
+        
+        - for(int i=0; i<NR; i++) {
+              init_un_sem(i+RECEP, 0);  <- RECEP[1..NR]: 0 pour chaque case (Bloque les récepteurs, aucun message n'est prêt à être lu initialement )
+          }
+
+1.2)
+On utilise un tableau de sémaphores RECEP[1..NR] plutôt qu'un unique sémaphore RECEP 
+augmenté de NR pour garantir que chaque récepteur soit bloqué individuellement et 
+libéré par l'émetteur pour chaque nouveau message5
+
+1.3)
+
+void EMETTEUR() {
+    while(1) {
+
+        P(EMET);
+        sp->donnes = rand() % 101;
+        printf("EMETTEUR: donnes: %d\n", sp->donnes);
+        
+        for(int i=0; i<NR; i++) {
+            V(RECEP + i);
+        }
+    }
+}
+
+void RECEPTEUR(int i) {
+		
+    while(1) {
+        int donnes;
+        
+        P(RECEP + i);
+        donnes = sp->donnes;
+        printf("RECEPTEUR donnes: %d\n", donnes);
+
+        P(MUTEXNBREC);
+        sp->nb_recepteurs++;
+        if(sp->nb_recepteurs == NR) {
+            printf("Tout les RECEPTEUR on lue la donnnes\n");
+            sp->nb_recepteurs = 0;
+            V(EMET);
+        }
+        V(MUTEXNBREC);
+        
+    }
+}
+
+Exercice 2: MISE EN OEUVRE AVEC UN TAMPON A NMAX CASES
+
+2.1)
+Semaphores:
+
+- init_un_sem(EM_CASE_VIDE, NMAX);
+Bloque les émetteurs s'il n'y a pas de case vide. Compte le nombre de cases vides
+
+- init_un_sem(EM_MUTEX, 1);
+Mutex pour protéger l'accès concurrent à l'indice de tête (ind_tete) par les émetteurs
+
+- for (int i=0; i<NMAX; i++) { init_un_sem(SEM_PLEIN + i, 0); }
+L'émetteur débloque NR fois chaque sémaphore après l'écriture, assurant que chaque récepteur peut se débloquer et lire le message.
+
+- for (int i=0; i<NMAX; i++) { init_un_sem(SEM_MUTEX_CASES + i, 1); }
+Mutex pour protéger nb_lecture[i] contre les accès concurrents entre récepteurs sur la même case i.
+
+Variable partagée:
+
+typedef struct {
+	int data[NMAX];             # Le tampon circulaire
+	int ind_tete;               # L'indice de la prochaine case libre
+	int nb_lecture[NMAX];       # Un tableau de compteurs où nb_lecture[i] stocke le nombre de récepteurs qui ont déjà lu le message contenu dans la case data[i]
+} t_segpart;
+
+- for (int i=0; i<NMAX; i++){ sp->nb_lecture[i] = 0; }
+
+
+2.2)
+
+EMETTEUR 
+    - P(EM_CASE_VIDE) : Attend une case vide.
+    
+    - P(EM_MUTEX) : Prend le mutex pour l'index de tête.
+    
+    - Détermine la prochaine case i: i = ind_tete, puis ind_tete = (ind_tete + 1) % NMAX.
+    
+    - V(EM_MUTEX) : Relâche le mutex de l'index de tête.
+    
+    - Écrit le message dans data[i].
+    
+    - Pour k = 0 à NR-1: V(SEM_PLEIN + i) : Libère chaque récepteur pour la case i.
+
+RECEPTEUR:
+
+    - Calcul de la case courante i: i = ind_local.
+    
+    - P(SEM_PLEIN + i) : Attend que l'émetteur ait écrit un message dans la case i.
+    
+    - P(SEM_MUTEX_CASES + i) : Prend le mutex de la case i (pour la mise à jour du compteur).
+    
+    - Lit la donnée de data[i] et incrémente nb_lecture[i].
+    
+    - Si nb_lecture[i] == NR (Dernier lecteur) :
+        Remet nb_lecture[i] à 0.
+        V(EM_CASE_VIDE) : Libère la case i pour l'émetteur.
+    
+    - V(SEM_MUTEX_CASES + i) : Relâche le mutex de la case $i$.
+    
+    - Passe à la case suivante: ind_local = (ind_local + 1) % NMAX$.
+
+
+2.3)
+
+void EMETTEUR(int i) {
+	for(;;) {
+		P(EM_CASE_VIDE);
+
+		P(EM_MUTEX);
+		int ind = sp->ind_tete;
+		sp->ind_tete = (ind + 1) % (NMAX);
+		V(EM_MUTEX);
+
+		sp->data[ind] = rand() % 101;
+		printf("Emeteur %d a ecrit %d en case %d\n", i, sp->data[ind], ind);
+
+		for(int k=0; k<NR; k++) {
+			V(ind+SEM_PLEIN);
+		}
+	}
+}
+
+
+void RECEPTEUR(int i) {
+	int ind_local = 0;
+	for(;;) {
+		P(SEM_PLEIN+ind_local);
+		
+
+		P(SEM_MUTEX_CASES + ind_local);
+		sp->nb_lecture[ind_local] = sp->nb_lecture[ind_local] + 1;
+		printf("Le recepteur %d a lu la valeur du tampon[%d]\n", i, ind_local);
+		
+		if(sp->nb_lecture[ind_local] == NR) {
+			printf("Tout les recepteur on lue la valeur de tampon[%d]\n", ind_local);
+			sp->nb_lecture[ind_local] = 0;
+			V(EM_CASE_VIDE);
+		}
+
+		V(SEM_MUTEX_CASES + ind_local);
+
+		ind_local = (ind_local + 1) % (NMAX);
+	}
+}

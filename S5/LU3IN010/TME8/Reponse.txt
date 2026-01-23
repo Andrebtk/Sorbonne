@@ -1,0 +1,194 @@
+TME8: GESTION MEMOIRE | Andre Bertok 21204512
+
+Exercice 1 : EXECUTION MANUELLE
+
+1.1)
+
+État du tas après p = tas_malloc(127) :
+tas[0] = 127
+tas[1] ... tas[127] = Données utilisateur.
+libre = -1 (plus de place libre)
+
+
+1.2)
+
+0 à 10 : p1 ("tp 1", taille 10). 
+11 à 20 : p4 ("systeme", taille 8 | l'octet tas[20] est perdu). 
+21 à 26 : p3 ("tp 3", taille 5). 
+27 à 127 : Zone libre (Taille 100, Suivant -1).
+
+
+
+Execice 2 : PROGRAMMATION
+
+2.1)
+
+int first_fit(int taille, int* pred) {
+	// Taille donnée + 1 octet pour stocker la taille
+	int taille_req = taille + 1;
+	int courant = libre;
+
+	*pred = -1;
+
+	// Tant qu'on est sur un bloc valide (indice != -1)
+	while(courant != -1) {
+		if( tas[courant] >= taille_req ) {
+			return courant;
+		}
+
+		// Si la place n'est pas suffisante
+		*pred = courant;
+		courant = tas[courant+1];
+	}
+
+	return -1;
+}
+
+2.2)
+
+char *tas_malloc(unsigned int taille) {
+	if(taille == 0) return NULL;
+
+	int pred;
+	int bloc_trouver = first_fit(taille, &pred);
+	if( bloc_trouver == -1) return NULL;
+
+	int bloc_libre_suivant = tas[bloc_trouver + 1];
+
+	int taille_bloc_courant = tas[bloc_trouver];
+	int taille_zone_alloue = taille + 1;
+	
+	int taille_restante = taille_bloc_courant - taille_zone_alloue;
+	int nouveau_bloc = bloc_trouver + taille_zone_alloue;
+
+	// On ne coupe que si le reste suffit pour faire un nouveau bloc libre (min 2 octets)
+	if(taille_restante > TAILMIN -1) {
+		tas[nouveau_bloc] = taille_restante;
+		tas[nouveau_bloc + 1] = bloc_libre_suivant;
+
+		// Mise a jour du chaînag
+		if(pred == -1) {
+			// Le bloc alloue etait le premier
+			libre = nouveau_bloc;
+		} 
+		else {
+			tas[pred+1] = nouveau_bloc;
+		}
+
+		tas[bloc_trouver] = taille;
+
+		return &tas[bloc_trouver+1];
+	} 
+	// On utilise tout le bloc
+	else {
+		//Mise a jour du chaînag
+		if( pred == -1) {
+			libre = bloc_libre_suivant;
+		}
+		else {
+			tas[pred + 1] = bloc_libre_suivant;
+		}
+
+		tas[bloc_trouver] = taille;
+		return &tas[bloc_trouver + 1];
+	}
+}
+
+
+2.3) [Facultatif]
+
+int tas_free(char *ptr){
+
+	// Retrouve l'indice de l'entête (juste avant la donnée pointée par ptr)
+	int index = ptr - tas - 1;
+
+	if (index < 0 || index >= TAILTAS) {
+		return -1;
+	}
+
+	int taille = tas[index];
+
+	for(int i=0; i<taille; i++) {
+		tas[index+1+i] = 0;
+	}
+
+	// Le nouveau bloc pointe vers l'ancien premier
+	tas[index] = taille;
+
+	// La tête de liste pointe vers le nouveau bloc
+	tas[index+1] = libre;
+	
+	libre = index;
+
+	return 0;
+}
+
+Limites : Le code ne gère pas la fusion des blocs contigus, 
+ce qui fragmente inutilement la mémoire. De plus, l'insertion 
+se fait toujours en tête de liste pour simplifier : on ne trie 
+pas les blocs par adresse et on ne parcourt pas la chaîne pour 
+insérer le bloc à sa position logique.
+
+2.4)
+
+int main() {
+  tas_init();
+
+  char *p1, *p2, *p3, *p4;
+  p1 = (char *) tas_malloc(10);
+  
+  p2 = (char *) tas_malloc(9);
+  
+  
+  p3 = (char *) tas_malloc(5);
+  
+  strcpy( p1, "tp 1" );
+  
+  strcpy( p2, "tp 2" );
+  strcpy( p3, "tp 3" );
+  
+  tas_free( p2 );
+  int t ;
+  printf("First fit: %d \n", first_fit(5,&t));
+
+  p4 = (char *) tas_malloc(8);
+  strcpy( p4, "systeme" );
+  
+  afficher_tas();
+}
+
+
+Affichage: 
+   0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15
+  10 116 112  32  49   0   0   0   0   0   0   8 115 121 115 116
+       t   p       1                               s   y   s   t
+
+  16  17  18  19  20  21  22  23  24  25  26  27  28  29  30  31
+ 101 109 101   0   0   5 116 112  32  51   0 100  -1   0   0   0
+   e   m   e               t   p       3       d                
+
+  32  33  34  35  36  37  38  39  40  41  42  43  44  45  46  47
+   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+                                                                
+
+  48  49  50  51  52  53  54  55  56  57  58  59  60  61  62  63
+   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+                                                                
+
+  64  65  66  67  68  69  70  71  72  73  74  75  76  77  78  79
+   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+                                                                
+
+  80  81  82  83  84  85  86  87  88  89  90  91  92  93  94  95
+   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+                                                                
+
+  96  97  98  99 100 101 102 103 104 105 106 107 108 109 110 111
+   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+                                                                
+
+ 112 113 114 115 116 117 118 119 120 121 122 123 124 125 126 127
+   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+                                                                
+
+---------------------------------------------------------------
